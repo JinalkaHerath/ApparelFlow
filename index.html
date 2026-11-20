@@ -20,7 +20,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ApparelFlow - Inventory Management System</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👔</text></svg>">
-  <style>
+  <script>
+  /* apply saved theme before first paint (no white flash in dark mode) */
+  (function () {
+    var t = 'light';
+    try { t = localStorage.getItem('af_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch (e) {}
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<style>
 :root {
   --primary: #2C3E50;
   --primary-2: #34495E;
@@ -244,12 +252,334 @@ pre.report { background: #F8F9FA; border: 1px solid var(--line); border-radius: 
   .sidebar, .topbar, .no-print { display: none !important; }
 }
 
+/* =====================================================================
+   LIQUID GLASS THEME - plain / neutral, light + dark
+   Frosted glass over a soft monochrome backdrop. Toggle: <html data-theme="dark">
+   ===================================================================== */
+:root {
+  --bg-1: #f5f5f7;
+  --bg-2: #e9e9ee;
+  --bg-shade: rgba(0, 0, 0, .05);
+  --glass: rgba(255, 255, 255, .58);
+  --glass-strong: rgba(255, 255, 255, .78);
+  --glass-soft: rgba(255, 255, 255, .40);
+  --glass-hover: rgba(255, 255, 255, .72);
+  --edge: rgba(255, 255, 255, .85);
+  --edge-dim: rgba(0, 0, 0, .06);
+  --sheen: rgba(255, 255, 255, .55);
+  --shadow: 0 1px 1px rgba(0, 0, 0, .03), 0 8px 28px rgba(0, 0, 0, .07), inset 0 1px 0 rgba(255, 255, 255, .9);
+  --shadow-hover: 0 2px 2px rgba(0, 0, 0, .04), 0 14px 38px rgba(0, 0, 0, .10), inset 0 1px 0 #fff;
+  --blur: blur(24px) saturate(160%);
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --line: rgba(0, 0, 0, .07);
+  --input: rgba(255, 255, 255, .7);
+  --input-focus: #fff;
+  --focus-ring: rgba(0, 0, 0, .12);
+  --accent-bg: #1d1d1f;
+  --accent-fg: #ffffff;
+  --danger: #c4372b;
+  --danger-bg: rgba(196, 55, 43, .09);
+  --ok: #2f7d4a;
+  --ok-bg: rgba(47, 125, 74, .10);
+  --warn: #9a6a00;
+  --warn-bg: rgba(154, 106, 0, .10);
+  --sel: rgba(0, 0, 0, .06);
+  --radius: 20px;
+  --blue: #1d1d1f;
+  --blue-dark: #1d1d1f;
+  color-scheme: light;
+}
+html[data-theme="dark"] {
+  --bg-1: #0c0c0e;
+  --bg-2: #18181b;
+  --bg-shade: rgba(255, 255, 255, .04);
+  --glass: rgba(40, 40, 44, .55);
+  --glass-strong: rgba(48, 48, 52, .75);
+  --glass-soft: rgba(36, 36, 40, .42);
+  --glass-hover: rgba(70, 70, 76, .55);
+  --edge: rgba(255, 255, 255, .12);
+  --edge-dim: rgba(255, 255, 255, .06);
+  --sheen: rgba(255, 255, 255, .06);
+  --shadow: 0 1px 1px rgba(0, 0, 0, .3), 0 10px 30px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .08);
+  --shadow-hover: 0 2px 2px rgba(0, 0, 0, .35), 0 16px 40px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .12);
+  --text: #f5f5f7;
+  --muted: #a1a1a6;
+  --line: rgba(255, 255, 255, .08);
+  --input: rgba(255, 255, 255, .06);
+  --input-focus: rgba(255, 255, 255, .10);
+  --focus-ring: rgba(255, 255, 255, .18);
+  --accent-bg: #f5f5f7;
+  --accent-fg: #111113;
+  --danger: #ff7b6e;
+  --danger-bg: rgba(255, 123, 110, .12);
+  --ok: #7ccf95;
+  --ok-bg: rgba(124, 207, 149, .12);
+  --warn: #e8b84a;
+  --warn-bg: rgba(232, 184, 74, .12);
+  --sel: rgba(255, 255, 255, .09);
+  --blue: #f5f5f7;
+  --blue-dark: #f5f5f7;
+  color-scheme: dark;
+}
+
+html { background: var(--bg-1); transition: background .3s; }
+body { background: transparent; color: var(--text); min-height: 100vh; position: relative; overflow-x: hidden; }
+a { color: var(--text); }
+
+/* soft neutral backdrop with gentle light pools (no colour) */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(60vmax 45vmax at 15% 0%, var(--bg-shade), transparent 60%),
+    radial-gradient(50vmax 40vmax at 100% 100%, var(--bg-shade), transparent 60%),
+    linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(70vmax 40vmax at 50% -10%, var(--sheen), transparent 70%);
+}
+
+/* glass surfaces */
+.card, .stat, .modal, .sidebar, .topbar, .login-form-wrap .login-form, .toast, .table-wrap, .tabs, .btn, .theme-toggle {
+  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+}
+
+/* ---------- shell ---------- */
+#app-view { gap: 14px; padding: 14px; grid-template-rows: 64px 1fr; background: transparent; }
+.topbar { background: var(--glass); color: var(--text); border: 1px solid var(--edge); border-radius: var(--radius); box-shadow: var(--shadow); }
+.topbar .brand, .menu-toggle { color: var(--text); }
+.topbar .brand small, .topbar .clock { color: var(--muted); opacity: 1; }
+.topbar .user .role { background: var(--sel); color: var(--text); border: 1px solid var(--edge-dim); }
+
+.sidebar { background: var(--glass-soft); border: 1px solid var(--edge); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 12px; }
+.sidebar .menu-label { color: var(--muted); }
+.nav-item { color: var(--text); border-radius: 12px; font-weight: 500; transition: background .2s; }
+.nav-item:hover { background: var(--glass-hover); }
+.nav-item.active { background: var(--glass-strong); color: var(--text); font-weight: 650; box-shadow: var(--shadow); border: 1px solid var(--edge); }
+.nav-item .ico { font-size: 17px; filter: none; opacity: 1; }
+.nav-item.logout { background: transparent; color: var(--danger); border: 1px solid var(--edge-dim); }
+.nav-item.logout:hover { background: var(--danger-bg); color: var(--danger); }
+
+main#content { padding: 6px 8px 40px; }
+.page-head h1 { font-weight: 650; letter-spacing: -.015em; }
+.page-head .sub, .status-bar { color: var(--muted); }
+
+/* ---------- panels ---------- */
+.card { position: relative; background: var(--glass); border: 1px solid var(--edge); box-shadow: var(--shadow); border-radius: var(--radius); padding: 20px; }
+.card, .stat, .modal { isolation: isolate; }
+.card::before, .stat::before, .modal::before {          /* glass sheen sits behind the content */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+  background: linear-gradient(180deg, var(--sheen) 0%, transparent 35%);
+}
+.card h3 { font-weight: 650; }
+.card h3 .right { color: var(--muted); }
+
+.stat { background: var(--glass); border: 1px solid var(--edge); border-left: 1px solid var(--edge); border-radius: var(--radius); box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s; }
+.stat::after { display: none; }
+.stat.clickable:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.stat .label { color: var(--muted); font-weight: 600; }
+.stat .value { color: var(--text); font-weight: 650; }
+.stat .ico {
+  opacity: 1; filter: none; font-size: 21px; width: 42px; height: 42px; top: 14px; right: 14px;
+  display: flex; align-items: center; justify-content: center; border-radius: 13px;
+  background: var(--glass-strong); border: 1px solid var(--edge); box-shadow: var(--shadow);
+}
+
+/* ---------- forms ---------- */
+.field label { color: var(--muted); font-weight: 500; }
+.field input, .field select, .field textarea, .toolbar select, .toolbar input, .cell-input,
+#p-scan, #emp-newname, #rf-emp, #rf-date, .login-form input {
+  background: var(--input) !important; color: var(--text); border: 1px solid var(--edge-dim) !important;
+  border-radius: 11px !important; box-shadow: inset 0 1px 1px rgba(0, 0, 0, .04); transition: background .2s, box-shadow .2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus, .toolbar input:focus, .toolbar select:focus, .cell-input:focus, .login-form input:focus {
+  outline: none; background: var(--input-focus) !important; box-shadow: 0 0 0 4px var(--focus-ring);
+}
+.field input[readonly] { opacity: .7; }
+.cell-input { width: 100%; padding: 7px 9px; }
+select option { background: var(--bg-1); color: var(--text); }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: .7; }
+
+/* ---------- buttons: monochrome glass ---------- */
+.btn {
+  border-radius: 999px; padding: 9px 18px; border: 1px solid var(--edge); background: var(--glass-strong); color: var(--text);
+  font-weight: 600; box-shadow: var(--shadow); text-shadow: none; transition: transform .15s, box-shadow .2s, background .2s;
+}
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-hover); background: var(--glass-strong); }
+.btn:active:not(:disabled) { transform: scale(.98); }
+.btn.primary, .btn.success { background: var(--accent-bg); color: var(--accent-fg); border-color: transparent; }
+.btn.primary:hover:not(:disabled), .btn.success:hover:not(:disabled) { background: var(--accent-bg); opacity: .9; }
+.btn.danger { background: var(--glass-strong); color: var(--danger); }
+.btn.danger:hover:not(:disabled) { background: var(--danger-bg); }
+.btn.warning, .btn.purple, .btn.teal, .btn.whatsapp, .btn.ghost { background: var(--glass-strong); color: var(--text); }
+.btn.ghost { background: var(--glass-soft); }
+
+/* ---------- tables ---------- */
+.table-wrap { background: var(--glass-soft); border: 1px solid var(--edge); border-radius: 14px; box-shadow: inset 0 1px 0 var(--sheen); }
+table.data th { background: var(--glass-strong); color: var(--muted); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--line); font-weight: 600; font-size: 12px; letter-spacing: .02em; }
+table.data td { border-bottom: 1px solid var(--line); color: var(--text); }
+table.data tbody tr:nth-child(even) { background: transparent; }
+table.data tbody tr:hover { background: var(--glass-hover); }
+table.data tbody tr.selected { background: var(--sel) !important; box-shadow: inset 3px 0 0 var(--text); }
+table.data tbody tr.row-low td { background: var(--danger-bg); color: var(--danger); }
+.badge { border: 1px solid var(--edge-dim); font-weight: 600; }
+.badge.red { background: var(--danger-bg); color: var(--danger); }
+.badge.green { background: var(--ok-bg); color: var(--ok); }
+.badge.gray, .badge.blue { background: var(--sel); color: var(--text); }
+
+/* ---------- tabs: segmented control ---------- */
+.tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--edge); background: var(--glass-soft); border-radius: 999px; box-shadow: var(--shadow); max-width: 100%; }
+.tab { border: 0; border-radius: 999px; margin: 0; padding: 8px 16px; color: var(--muted); font-weight: 500; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--text); font-weight: 650; border-bottom-color: transparent; background: var(--glass-strong); box-shadow: var(--shadow); }
+
+/* ---------- modal, toast, misc ---------- */
+.modal-back { background: rgba(0, 0, 0, .22); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.modal { position: relative; background: var(--glass-strong); border: 1px solid var(--edge); border-radius: 24px; box-shadow: 0 30px 80px rgba(0, 0, 0, .25), inset 0 1px 0 var(--sheen); color: var(--text); }
+.modal header, .modal footer { border-color: var(--line); }
+.modal header .x { color: var(--muted); }
+.toast, .toast.success, .toast.error, .toast.warn { background: var(--glass-strong); color: var(--text); border: 1px solid var(--edge); border-radius: 14px; box-shadow: var(--shadow-hover); }
+.toast { border-left: 4px solid var(--muted); }
+.toast.success { border-left-color: var(--ok); }
+.toast.error { border-left-color: var(--danger); }
+.toast.warn { border-left-color: var(--warn); }
+pre.report { background: var(--glass-soft); border: 1px solid var(--edge); border-radius: 14px; color: var(--text); }
+.log { background: rgba(0, 0, 0, .78); border-radius: 14px; border: 1px solid var(--edge-dim); }
+.barcode-preview { background: #fff; border: 1px dashed var(--line); border-radius: 16px; }
+.demo-banner { background: var(--warn-bg) !important; border: 1px solid var(--edge-dim) !important; color: var(--text) !important; border-radius: 12px; }
+.empty, .help { color: var(--muted) !important; }
+.dot.on { background: var(--ok); box-shadow: none; }
+.dot.off { background: var(--danger); }
+.kv b { color: var(--muted); }
+.editing-note { color: var(--muted); }
+.spinner { border-color: var(--line); border-top-color: var(--text); }
+
+/* ---------- theme toggle ---------- */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px 0 12px; border-radius: 999px;
+  border: 1px solid var(--edge); background: var(--glass-strong); color: var(--text); box-shadow: var(--shadow);
+  cursor: pointer; font-size: 13px; transition: transform .15s, box-shadow .2s;
+}
+.theme-toggle span { font-size: 15px; line-height: 1; }
+.theme-toggle b { font-weight: 600; }
+.theme-toggle:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
+.theme-toggle.floating { position: fixed; top: 18px; right: 18px; z-index: 5; }
+@media (max-width: 900px) { .topbar .theme-toggle b { display: none; } .topbar .theme-toggle { padding: 0 11px; } }
+
+/* ---------- login ---------- */
+#login-view, .login-brand, .login-form-wrap { background: transparent; }
+.login-brand h1 { color: var(--text); background: none; -webkit-background-clip: initial; background-clip: initial; font-size: 42px; font-weight: 700; letter-spacing: -.025em; }
+.login-brand .logo { filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .18)); }
+.login-brand .sub { color: var(--text); }
+.login-brand .tag, .login-foot, .login-form p.hint { color: var(--muted); }
+.login-form label { color: var(--muted); }
+.login-form-wrap .login-form { position: relative; background: var(--glass); border: 1px solid var(--edge); border-radius: 28px; padding: 36px 32px; box-shadow: var(--shadow-hover); }
+.login-form .btn { border-radius: 14px; }
+.login-error { color: var(--danger); }
+
+/* plain glass, but icons keep their full colour */
+.topbar .brand, .page-head h1, .card h3, .tab, .btn, .nav-item { filter: none; }
+.stat .label { padding-right: 52px; }
+
+/* Job File editable schedule */
+#j-ops td { max-width: none; overflow: visible; }
+
+@media (max-width: 900px) {
+  #app-view { padding: 8px; gap: 8px; grid-template-rows: 60px 1fr; }
+  .sidebar { top: 76px; left: 8px; bottom: 8px; border-radius: var(--radius); transform: translateX(calc(-100% - 24px)); background: var(--glass-strong); }
+  .sidebar.open { transform: none; }
+  .tabs { display: flex; border-radius: 18px; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card, .stat, .topbar, .sidebar, .modal, .login-form-wrap .login-form { background: var(--bg-1); }
+}
+@media (max-width: 600px) {
+  .topbar .brand { white-space: nowrap; font-size: 16px; }
+  .topbar .user { max-width: 110px; line-height: 1.2; }
+}
+
+/* =====================================================================
+   SEA-BLUE FROSTED GLASS NAVIGATION MENU
+   ===================================================================== */
+:root {
+  --sea-1: rgba(0, 98, 142, .86);      /* sea blue  #00628E */
+  --sea-2: rgba(0, 128, 164, .80);     /* lighter sea #0080A4 */
+  --sea-edge: rgba(255, 255, 255, .45);
+  --sea-glow: rgba(0, 120, 165, .22);
+  --sea-text: #ffffff;
+  --sea-dim: rgba(255, 255, 255, .78);
+  --sea-active-text: #005b82;
+}
+html[data-theme="dark"] {
+  --sea-1: rgba(0, 72, 105, .78);
+  --sea-2: rgba(0, 104, 132, .62);
+  --sea-edge: rgba(140, 220, 255, .22);
+  --sea-glow: rgba(0, 140, 190, .20);
+  --sea-active-text: #00384f;
+}
+
+/* faint sea-blue light behind the menu so the frosting has something to blur */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(420px 520px at 120px 260px, var(--sea-glow), transparent 70%),
+    radial-gradient(360px 420px at 80px 85%, var(--sea-glow), transparent 70%),
+    radial-gradient(70vmax 40vmax at 50% -10%, var(--sheen), transparent 70%);
+}
+
+@media (min-width: 901px) { .sidebar { position: relative; } }   /* phones keep the slide-in (fixed) menu */
+.sidebar {
+  background: linear-gradient(165deg, var(--sea-1) 0%, var(--sea-2) 100%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  backdrop-filter: blur(26px) saturate(170%);
+  border: 1px solid var(--sea-edge) !important;
+  box-shadow: 0 12px 40px rgba(0, 78, 112, .28), inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(255, 255, 255, .08) !important;
+  isolation: isolate;
+}
+.sidebar::before {                      /* glass sheen across the top */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 32%);
+}
+.sidebar .menu-label { color: var(--sea-dim) !important; letter-spacing: .1em; }
+
+.sidebar .nav-item {
+  color: var(--sea-text) !important; background: transparent; border: 1px solid transparent;
+  text-shadow: 0 1px 2px rgba(0, 40, 60, .25);
+}
+.sidebar .nav-item:hover {
+  background: rgba(255, 255, 255, .16) !important; border-color: rgba(255, 255, 255, .22);
+}
+.sidebar .nav-item.active {
+  background: rgba(255, 255, 255, .9) !important; color: var(--sea-active-text) !important;
+  border: 1px solid rgba(255, 255, 255, .95) !important; text-shadow: none; font-weight: 650;
+  box-shadow: 0 6px 18px rgba(0, 50, 75, .25), inset 0 1px 0 #fff !important;
+}
+.sidebar .nav-item.locked { opacity: .55; }
+.sidebar .nav-item .ico {              /* colourful icons sit on small frosted tiles */
+  width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 9px; background: rgba(255, 255, 255, .18); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3);
+  text-shadow: none;
+}
+.sidebar .nav-item.active .ico { background: rgba(0, 105, 148, .1); }
+.sidebar .nav-item.logout {
+  color: #ffffff !important; background: rgba(255, 255, 255, .08) !important; border: 1px solid rgba(255, 255, 255, .25) !important;
+}
+.sidebar .nav-item.logout:hover { background: rgba(231, 76, 60, .85) !important; color: #fff !important; }
+
+@media (max-width: 900px) {
+  .sidebar { background: linear-gradient(165deg, rgba(0, 105, 148, .93), rgba(0, 140, 172, .9)) !important; }
+  html[data-theme="dark"] .sidebar { background: linear-gradient(165deg, rgba(0, 66, 96, .95), rgba(0, 96, 124, .92)) !important; }
+}
+
 </style>
 </head>
 <body>
 
 <!-- ============ LOGIN ============ -->
 <div id="login-view" class="hidden">
+  <button class="theme-toggle floating" id="theme-toggle-login" type="button" title="Switch White / Dark theme"></button>
   <div class="login-brand">
     <div class="logo">👔</div>
     <h1>ApparelFlow</h1>
@@ -280,6 +610,7 @@ pre.report { background: #F8F9FA; border: 1px solid var(--line); border-radius: 
     <div class="brand">👔 ApparelFlow <small>Inventory Management System</small></div>
     <div class="spacer"></div>
     <div class="clock" id="clock"></div>
+    <button class="theme-toggle" id="theme-toggle" type="button" title="Switch White / Dark theme"></button>
     <div class="user"><span id="user-name"></span><span class="role" id="user-role"></span></div>
   </header>
   <nav class="sidebar" id="sidebar">
@@ -640,7 +971,7 @@ function searchBar(container, table, { options, placeholder = 'Search…', extra
 }
 
 /* ---------------- charts ---------------- */
-const PALETTE = ['#3498DB', '#27AE60', '#E74C3C', '#F39C12', '#9B59B6', '#16A085', '#E67E22', '#2C3E50', '#1ABC9C', '#C0392B', '#8E44AD', '#2980B9'];
+let PALETTE = [];   /* neutral greys, set by Theme.applyCharts() */
 
 function chart(canvas, config) {
   if (!canvas) return null;
@@ -695,6 +1026,48 @@ function waLink(phone, text) {
   if (p.length === 9) p = '94' + p;
   return `https://wa.me/${p}?text=${encodeURIComponent(text)}`;
 }
+
+/* ---------------- White / Dark theme ---------------- */
+const Theme = {
+  get() { return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'; },
+  set(t) {
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('af_theme', t); } catch (e) { /* storage blocked - theme lasts for this tab */ }
+    Theme.applyCharts();
+    Theme.updateButtons();
+  },
+  toggle() { Theme.set(Theme.get() === 'dark' ? 'light' : 'dark'); },
+  updateButtons() {
+    const dark = Theme.get() === 'dark';
+    document.querySelectorAll('.theme-toggle').forEach(b => {
+      b.innerHTML = dark ? '<span>☀️</span><b>White</b>' : '<span>🌙</span><b>Dark</b>';
+      b.setAttribute('aria-label', dark ? 'Switch to white theme' : 'Switch to dark theme');
+    });
+  },
+  applyCharts() {
+    const dark = Theme.get() === 'dark';
+    /* plain monochrome chart colours that follow the theme */
+    Object.assign(Theme, dark
+      ? { ink: '#e8e8ed', soft: 'rgba(232,232,237,.12)', alt: '#76767c', bad: '#ff7b6e' }
+      : { ink: '#1d1d1f', soft: 'rgba(29,29,31,.08)', alt: '#a1a1a6', bad: '#c4372b' });
+    PALETTE = dark
+      ? ['#f5f5f7', '#9c9ca1', '#5e5e63', '#d2d2d7', '#3a3a3c', '#86868b', '#e8e8ed', '#48484a', '#b8b8bd', '#2c2c2e', '#c7c7cc', '#6e6e73']
+      : ['#1d1d1f', '#6e6e73', '#a1a1a6', '#3a3a3c', '#d2d2d7', '#48484a', '#86868b', '#c7c7cc', '#2c2c2e', '#b8b8bd', '#5e5e63', '#e8e8ed'];
+    if (!window.Chart) return;
+    Chart.defaults.color = dark ? '#a1a1a6' : '#6e6e73';
+    Chart.defaults.font.family = '-apple-system, "Segoe UI", system-ui, Roboto, Arial, sans-serif';
+    Chart.defaults.borderColor = dark ? 'rgba(255, 255, 255, .07)' : 'rgba(0, 0, 0, .06)';
+    Chart.defaults.elements.arc.borderColor = dark ? 'rgba(28, 28, 32, .9)' : 'rgba(255, 255, 255, .9)';
+    Chart.defaults.elements.arc.borderWidth = 2;
+    Chart.defaults.elements.bar.borderRadius = 8;
+    Chart.defaults.plugins.tooltip.backgroundColor = dark ? 'rgba(245, 245, 247, .94)' : 'rgba(29, 29, 31, .9)';
+    Chart.defaults.plugins.tooltip.titleColor = dark ? '#111113' : '#fff';
+    Chart.defaults.plugins.tooltip.bodyColor = dark ? '#111113' : '#fff';
+    Chart.defaults.plugins.tooltip.cornerRadius = 10;
+    Chart.defaults.plugins.tooltip.padding = 10;
+  },
+};
+Theme.applyCharts();
 
 </script>
 <script>/* ===== data layer ===== */
@@ -904,6 +1277,9 @@ const PERMS = {
   sales: ['Admin', 'Employee'],
   barcode: ['Admin', 'Employee'],
   productivity: ['Admin'],
+  // Job File: everyone can view, these roles can add/edit/delete
+  jobfile: ['Admin', 'Store Manager', 'Employee', 'fabric cutters', 'sewing', 'machine operators', 'quality inspectors'],
+  jobfile_edit: ['Admin', 'Store Manager'],
 };
 const MATERIAL_CONSUMPTION_RATIOS = {
   crocodile: { polo_tshirt: 0.333, formal_shirt: 0.4, shorts: 0.25, crew_neck: 0.3 },
@@ -1073,9 +1449,31 @@ defRoute('GET', '/api/me', async () => {
   return { user, perms: PERMS, mode: CONFIG.DEMO ? 'demo' : 'firebase' };
 });
 
+/* Top 10 employees by pieces (productivity records), for Today / This Month / All Time */
+function topEmployees(emps, flat, nested) {
+  const names = {};
+  Object.entries(emps).forEach(([k, v]) => { if (v && typeof v === 'object') names[k] = v.name || k; });
+  const rows = [];
+  Object.values(flat).forEach(r => { if (r && typeof r === 'object') rows.push([r.employeeId || '', r.employeeName || '', String(r.date || '').slice(0, 10), toF(r.pieces)]); });
+  Object.entries(nested).forEach(([eid, byDate]) => Object.entries(asDict(byDate)).forEach(([date, recs]) =>
+    Object.values(asDict(recs)).forEach(r => { if (r && typeof r === 'object') rows.push([r.employeeId || eid, r.employeeName || '', String(r.date || date).slice(0, 10), toF(r.pieces)]); })));
+  const t = today(), m = t.slice(0, 7);
+  const top = test => {
+    const agg = {};
+    rows.forEach(([id, name, date, pcs]) => {
+      if (!test(date)) return;
+      const key = id || name || 'Unknown';
+      const a = agg[key] ||= { id, name: names[id] || name || id || 'Unknown', pieces: 0 };
+      a.pieces += pcs;
+    });
+    return Object.values(agg).filter(a => a.pieces > 0).sort((a, b) => b.pieces - a.pieces).slice(0, 10);
+  };
+  return { today: top(d => d === t), month: top(d => d.startsWith(m)), all: top(() => true) };
+}
+
 defRoute('GET', '/api/dashboard', async () => {
   requireUser();
-  const [emp, sup, cat, prod, sales, mats, perf] = await fetchMany('employee_data', 'supplier_data', 'category_data', 'product_data', 'sales_data', 'raw_materials', 'product_performance');
+  const [emp, sup, cat, prod, sales, mats, perf, jobs, flatProd, nestedProd] = await fetchMany('employee_data', 'supplier_data', 'category_data', 'product_data', 'sales_data', 'raw_materials', 'product_performance', 'job_files', 'productivity_records', 'productivity');
   let barcodes = 0;
   try { barcodes = Object.keys(await store.barcodeList()).length; } catch (e) { /* firestore not reachable */ }
   const agg = {};
@@ -1098,8 +1496,8 @@ defRoute('GET', '/api/dashboard', async () => {
   const month = today().slice(0, 7);
   const month_sales = Object.values(sales).filter(s => s && String(s.order_date || '').startsWith(month)).reduce((a, s) => a + toF(s.total_amount), 0);
   return {
-    counts: { employees: Object.keys(emp).length, suppliers: Object.keys(sup).length, categories: Object.keys(cat).length, products: Object.keys(prod).length, sales: Object.keys(sales).length, barcodes, raw_materials: Object.keys(mats).length, low_stock: low },
-    month_sales, supplier_perf, production, stock, server_time: nowStr(),
+    counts: { employees: Object.keys(emp).length, suppliers: Object.keys(sup).length, categories: Object.keys(cat).length, products: Object.keys(prod).length, sales: Object.keys(sales).length, barcodes, raw_materials: Object.keys(mats).length, low_stock: low, job_files: Object.keys(jobs).length },
+    month_sales, supplier_perf, production, stock, employee_perf: topEmployees(emp, flatProd, nestedProd), server_time: nowStr(),
   };
 });
 
@@ -1431,7 +1829,7 @@ function slotInfo(r) {
 
 defRoute('GET', '/api/productivity', async () => {
   requireUser('productivity');
-  const [flat, nested, emps, att] = await fetchMany('productivity_records', 'productivity', 'employee_data', 'attendance_data');
+  const [flat, nested, emps, att, jobFiles, lineRecs] = await fetchMany('productivity_records', 'productivity', 'employee_data', 'attendance_data', 'job_files', 'job_line_records');
   const names = Object.fromEntries(Object.entries(emps).filter(([, v]) => v && typeof v === 'object').map(([k, v]) => [k, v.name || '']));
   const records = [];
   const add = (path, r, empHint, dateHint) => {
@@ -1441,6 +1839,8 @@ defRoute('GET', '/api/productivity', async () => {
       path, employee_id: eid, employee_name: r.employeeName || names[eid] || 'Unknown',
       date: String(r.date || dateHint || '').slice(0, 10), hour: slot.hour, slot: slot.label, slot_order: slot.order,
       task_type: r.taskType || r.operation || 'Unknown',
+      job_number: String(r.jobNumber || '').trim(), item_name: r.itemName || '', machine_type: r.machineType || '',
+      operation_seq: Math.trunc(toF(r.operationSeq)),
       pieces: Math.trunc(toF(r.pieces)), line_in: Math.trunc(toF(r.lineIn)), line_out: Math.trunc(toF(r.lineOut)),
       recorded_at: r.recordedAt || r.receivedAt || '', recorded_by: r.recordedBy || '', source: path.split('/')[0],
     });
@@ -1454,7 +1854,22 @@ defRoute('GET', '/api/productivity', async () => {
   }));
   const employees = Object.entries(emps).filter(([, v]) => v && typeof v === 'object').map(([k, v]) => ({
     id: k, name: v.name || '', rfid: v.rfid || '', registration_date: v.registration_date || '', usertype: v.usertype || '' }));
-  return { records, attendance, employees, server_time: nowStr() };
+  const jobs = Object.entries(jobFiles).filter(([, j]) => j && typeof j === 'object').map(([k, j]) => ({
+    key: k, job_number: String(j.job_number || '').trim(), item_name: j.item_name || '', notes: j.notes || '',
+    operations: jobOperations(j.operations).map((o, i) => Object.assign({ seq: i + 1 }, o)),
+  }));
+  const optNum = v => (v === null || v === undefined || v === '' ? null : toF(v));
+  const line_records = Object.entries(lineRecs).filter(([, r]) => r && typeof r === 'object').map(([k, r]) => {
+    const li = Math.trunc(toF(r.lineInput)), lo = Math.trunc(toF(r.lineOutput));
+    const stored = optNum(r.lineBalance);   // admin may have edited it on the productivity page
+    return {
+      id: k, job_number: String(r.jobNumber || '').trim(), item_names: r.itemNames || '', date: String(r.date || '').slice(0, 10),
+      line_input: li, line_output: lo, line_balance: stored === null ? li - lo : Math.trunc(stored),
+      balance_edited: !!r.lineBalanceManual, packing_balance: optNum(r.packingBalance),
+      recorded_at: r.recordedAt || '', recorded_by: r.recordedByName || r.recordedBy || '',
+    };
+  }).sort((a, b) => String(b.recorded_at).localeCompare(String(a.recorded_at)));
+  return { records, attendance, employees, jobs, line_records, server_time: nowStr() };
 });
 defRoute('DELETE', '/api/productivity/record', async (_, d) => {
   requireUser('productivity');
@@ -1464,10 +1879,101 @@ defRoute('DELETE', '/api/productivity/record', async (_, d) => {
   await store.delete(parts.join('/'));
   return { message: 'Record deleted successfully.' };
 });
+defRoute('DELETE', '/api/line-records/:id', async m => {
+  requireUser('productivity');
+  await store.delete(`job_line_records/${checkKey(decodeURIComponent(m.id))}`);
+  return { message: 'Line entry deleted' };
+});
 defRoute('DELETE', '/api/attendance/:id', async m => {
   requireUser('productivity');
   await store.delete(`attendance_data/${checkKey(decodeURIComponent(m.id))}`);
   return { message: 'Attendance record deleted' };
+});
+
+/* ---- job file: operation schedule per Job Number + Item ---- */
+const MACHINE_TYPES = [
+  'Single Needle Lockstitch (SNLS)', 'Double Needle Lockstitch (DNLS)', 'Overlock 3 Thread',
+  'Overlock 4 Thread', 'Overlock 5 Thread (Safety Stitch)', 'Flatlock / Coverstitch', 'Feed-off-the-Arm',
+  'Kansai (Multi-Needle)', 'Zigzag', 'Bartack', 'Buttonhole', 'Button Attach', 'Snap / Rivet Machine',
+  'Label Attach', 'Fusing Machine', 'Iron / Steam Press', 'Cutting Machine', 'Thread Trimming', 'Manual / Hand Work',
+];
+function jobOperations(raw) {
+  return Object.entries(asDict(raw))
+    .filter(([, o]) => o && typeof o === 'object')
+    .sort((a, b) => (toF(a[1].seq) - toF(b[1].seq)) || (parseInt(a[0], 10) - parseInt(b[0], 10)))
+    .map(([, o]) => ({ operation_name: o.operation_name || '', machine_type: o.machine_type || '', smv: o.smv ?? '', notes: o.notes || '' }));
+}
+async function jobPayload(d, key = null) {
+  const job = String(d.job_number || '').trim(), item = String(d.item_name || '').trim();
+  if (!job) throw new ApiError('Job Number is required');
+  if (!item) throw new ApiError('Item Name is required');
+  if (!Array.isArray(d.operations)) throw new ApiError('Invalid operation schedule');
+  const ops = d.operations.map((o, idx) => {
+    const i = idx + 1;
+    const name = String(o.operation_name || '').trim(), machine = String(o.machine_type || '').trim();
+    if (!name) throw new ApiError(`Operation ${i}: operation name is required`);
+    if (!machine) throw new ApiError(`Operation ${i} (${name}): machine type is required`);
+    const rec = { seq: i, operation_name: name, machine_type: machine };
+    const smv = String(o.smv ?? '').trim();
+    if (smv) {
+      const v = parseFloat(smv);
+      if (!Number.isFinite(v) || v < 0) throw new ApiError(`Operation ${i} (${name}): SMV must be a positive number`);
+      rec.smv = Math.round(v * 1000) / 1000;
+    }
+    const notes = String(o.notes || '').trim();
+    if (notes) rec.notes = notes;
+    return rec;
+  });
+  if (!ops.length) throw new ApiError('Add at least one operation to the schedule');
+  const all = asDict(await store.get('job_files'));
+  for (const [k, j] of Object.entries(all)) {
+    if (k !== key && j && String(j.job_number || '').trim().toLowerCase() === job.toLowerCase()
+        && String(j.item_name || '').trim().toLowerCase() === item.toLowerCase())
+      throw new ApiError(`A job file for ${job} / ${item} already exists - select it in the list to edit it`);
+  }
+  return { job_number: job, item_name: item, notes: String(d.notes || '').trim(), operations: ops };
+}
+defRoute('GET', '/api/jobfiles', async () => {
+  requireUser('jobfile');
+  const [jobs, prods] = await fetchMany('job_files', 'product_data');
+  const opNames = new Set(), machines = new Set(MACHINE_TYPES);
+  const rows = Object.entries(jobs).filter(([, j]) => j && typeof j === 'object').map(([k, j]) => {
+    const ops = jobOperations(j.operations);
+    ops.forEach(o => { if (o.operation_name) opNames.add(o.operation_name); if (o.machine_type) machines.add(o.machine_type); });
+    return {
+      key: k, job_number: j.job_number || '', item_name: j.item_name || '', notes: j.notes || '', operations: ops,
+      op_count: ops.length, total_smv: Math.round(ops.reduce((a, o) => a + toF(o.smv), 0) * 1000) / 1000,
+      machines: [...new Set(ops.map(o => o.machine_type).filter(Boolean))].sort(),
+      created_at: j.created_at || '', updated_at: j.updated_at || '',
+    };
+  });
+  rows.sort((a, b) => String(a.job_number).localeCompare(String(b.job_number), undefined, { numeric: true, sensitivity: 'base' })
+    || String(a.item_name).localeCompare(String(b.item_name), undefined, { sensitivity: 'base' }));
+  const items = new Set([...Object.values(prods).filter(p => p && typeof p === 'object').map(p => p.name), ...rows.map(r => r.item_name)].filter(Boolean));
+  const sortCI = arr => [...arr].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  return { rows, items: sortCI(items), operation_names: sortCI(opNames), machine_types: sortCI(machines) };
+});
+defRoute('POST', '/api/jobfiles', async (_, d) => {
+  const u = requireUser('jobfile_edit');
+  const rec = await jobPayload(d);
+  Object.assign(rec, { created_at: nowStr(), created_by: u.id });
+  const key = await store.push('job_files', rec);
+  return { message: `Job file saved (${rec.operations.length} operations)`, key };
+});
+defRoute('PUT', '/api/jobfiles/:key', async (m, d) => {
+  const u = requireUser('jobfile_edit');
+  const key = checkKey(decodeURIComponent(m.key), 'Job file');
+  const old = await store.get(`job_files/${key}`);
+  if (!old) throw new ApiError('Job file not found', 404);
+  const rec = await jobPayload(d, key);
+  Object.assign(rec, { created_at: old.created_at || '', created_by: old.created_by || '', updated_at: nowStr(), updated_by: u.id });
+  await store.set(`job_files/${key}`, rec);
+  return { message: `Job file updated (${rec.operations.length} operations)`, key };
+});
+defRoute('DELETE', '/api/jobfiles/:key', async m => {
+  requireUser('jobfile_edit');
+  await store.delete(`job_files/${checkKey(decodeURIComponent(m.key), 'Job file')}`);
+  return { message: 'Job file deleted' };
 });
 
 const NO_HW = { running: false, error: 'Not available in the single-file version', events: [] };
@@ -1555,6 +2061,26 @@ function buildDemoSeed() {
     }
   }
 
+  /* records booked against Job File operations (as the productivity page now saves them) */
+  const polo = [['Shoulder join', 'Overlock 4 Thread', 1], ['Collar attach', 'Single Needle Lockstitch (SNLS)', 2],
+    ['Placket make', 'Single Needle Lockstitch (SNLS)', 3], ['Buttonhole', 'Buttonhole', 4], ['Sleeve hem', 'Flatlock / Coverstitch', 5],
+    ['Side seam', 'Overlock 4 Thread', 6], ['Button attach', 'Button Attach', 7]];
+  const intervals = ['1 - 8:00 AM - 9:00 AM', '2 - 9:00 AM - 10:00 AM', '3 - 10:00 AM - 11:00 AM', '6 - 1:45 PM - 2:45 PM', '8 - 4:00 PM - 5:00 PM'];
+  let jk = 0;
+  for (let days = 0; days < 5; days++) {
+    polo.forEach(([op, machine, seq], i) => {
+      [['EMP002', 'Nimali Perera'], ['EMP003', 'Kasun Silva']].forEach(([id, name], e) => {
+        if ((i + e + days) % 3 === 0) return;
+        jk++;
+        recs[`-Jrec${String(jk).padStart(4, '0')}`] = {
+          employeeId: id, employeeName: name, jobNumber: 'JOB-2026-001', itemName: 'Classic Polo', jobFileKey: '-Jdemo0001',
+          operation: op, operationSeq: seq, machineType: machine, date: d(days), pieces: 40 + ((jk * 17) % 45) - seq * 3,
+          timeInterval: intervals[jk % intervals.length], recordedAt: `${d(days)}T0${(jk % 9) + 1}:00:00Z`, recordedBy: 'EMP001',
+        };
+      });
+    });
+  }
+
   return {
     employee_data: {
       EMP001: emp('Admin User', 'admin@apparelflow.lk', 'Male', 'Admin', 'admin123', 'A1B2C3D4', { salary: '120000' }),
@@ -1604,6 +2130,31 @@ function buildDemoSeed() {
       '-Ademo0004': { name: 'Kasun Silva', uid: '11223344', date: lk(1), time_in: '08:10:00', time_out: '16:15:00', work_hours: '8h 5m', ot_hours: '0h 5m' },
     },
     production_batches: {},
+    job_line_records: (() => {
+      const o = {};
+      [[4, 220, 180, 1200], [3, 200, 210, 1015], [2, 240, 225, 820], [1, 210, 230, 610], [0, 150, 120, null]].forEach(([days, li, lo, pk], i) => {
+        o[`-Ldemo${i + 1}`] = { jobNumber: 'JOB-2026-001', itemNames: 'Classic Polo', date: d(days), lineInput: li, lineOutput: lo,
+          lineBalance: i === 1 ? li - lo - 5 : li - lo, ...(i === 1 ? { lineBalanceManual: true } : {}), ...(pk === null ? {} : { packingBalance: pk }), recordedAt: `${d(days)}T11:30:00.000Z`,
+          recordedBy: 'EMP001', recordedByName: 'Admin User' };
+      });
+      return o;
+    })(),
+    job_files: {
+      '-Jdemo0001': {
+        job_number: 'JOB-2026-001', item_name: 'Classic Polo', notes: 'Odel order - 1,200 pcs',
+        created_at: nowStr(), created_by: 'EMP001',
+        operations: [
+          { seq: 1, operation_name: 'Shoulder join', machine_type: 'Overlock 4 Thread', smv: 0.35 },
+          { seq: 2, operation_name: 'Collar attach', machine_type: 'Single Needle Lockstitch (SNLS)', smv: 0.6 },
+          { seq: 3, operation_name: 'Placket make', machine_type: 'Single Needle Lockstitch (SNLS)', smv: 0.8 },
+          { seq: 4, operation_name: 'Buttonhole', machine_type: 'Buttonhole', smv: 0.25 },
+          { seq: 5, operation_name: 'Sleeve hem', machine_type: 'Flatlock / Coverstitch', smv: 0.4 },
+          { seq: 6, operation_name: 'Side seam', machine_type: 'Overlock 4 Thread', smv: 0.5 },
+          { seq: 7, operation_name: 'Button attach', machine_type: 'Button Attach', smv: 0.2 },
+          { seq: 8, operation_name: 'Final press', machine_type: 'Iron / Steam Press', smv: 0.45 },
+        ],
+      },
+    },
     __firestore__: { products: { 501: { name: 'Classic Polo', size: 'M', customer: 'Lanka Textiles', material: 'Cotton', category: 'Polo T-Shirt', quantity: '40', has_barcode: true, barcode_data: '501|Classic Polo|M|Lanka Textiles|Cotton|Polo T-Shirt|40', timestamp: nowStr() } } },
   };
 }
@@ -1661,8 +2212,11 @@ registerPage('dashboard', {
       <div class="grid cols-2">
         <div class="card"><h3>📊 Today's Production Performance <span class="right" id="d-prod-date"></span></h3>
           <div class="chart-box"><canvas id="d-prod"></canvas></div></div>
-        <div class="card"><h3>📈 Supplier Delivery Performance <span class="right">avg delivery days</span></h3>
-          <div class="chart-box"><canvas id="d-sup"></canvas></div></div>
+        <div class="card"><h3>🏆 Top 10 Employee Performance
+            <select id="d-emp-period" class="right" style="padding:4px 8px;border-radius:8px;font-size:12px">
+              <option value="today">Today</option><option value="month" selected>This Month</option><option value="all">All Time</option>
+            </select></h3>
+          <div class="chart-box"><canvas id="d-emp"></canvas></div></div>
       </div>
       <div class="grid cols-2">
         <div class="card"><h3>📦 Raw Material Stock Distribution</h3>
@@ -1680,7 +2234,32 @@ registerPage('dashboard', {
       ['barcodes', 'Barcodes', '🏷️', '#16A085', 'barcode'],
       ['raw_materials', 'Raw Materials', '🧵', '#F39C12', 'materials'],
       ['low_stock', 'Low Stock Items', '⚠️', '#C0392B', 'materials'],
+      ['job_files', 'Job Files', '📁', '#6366F1', 'jobfile'],
     ];
+
+    let lastData = null;
+    const PERIOD_TEXT = { today: 'today', month: 'this month', all: 'yet' };
+    function drawEmployees() {
+      const ec = $('#d-emp');
+      const period = $('#d-emp-period').value;
+      const list = (lastData && lastData.employee_perf && lastData.employee_perf[period]) || [];
+      if (!list.length) { emptyChart(ec, `No productivity records ${PERIOD_TEXT[period]}`); return; }
+      showCanvas(ec);
+      chart(ec, {
+        type: 'bar',
+        data: {
+          labels: list.map(e => e.name),
+          datasets: [{ label: 'Pieces', data: list.map(e => e.pieces),
+            backgroundColor: list.map((_, i) => (i === 0 ? Theme.ink : Theme.alt)), borderRadius: 6, maxBarThickness: 30 }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${fmtInt(c.raw)} pieces` } } },
+          scales: { x: { beginAtZero: true, title: { display: true, text: 'Pieces' } } },
+        },
+      });
+    }
+    $('#d-emp-period').onchange = drawEmployees;
 
     const load = async () => {
       const d = await api('GET', '/api/dashboard');
@@ -1701,28 +2280,16 @@ registerPage('dashboard', {
           data: {
             labels: d.production.map(p => p.product),
             datasets: [
-              { label: 'Produced', data: d.production.map(p => p.produced), backgroundColor: '#27AE60', borderRadius: 4 },
-              { label: 'Damaged', data: d.production.map(p => p.damaged), backgroundColor: '#E74C3C', borderRadius: 4 },
+              { label: 'Produced', data: d.production.map(p => p.produced), backgroundColor: Theme.ink, borderRadius: 8 },
+              { label: 'Damaged', data: d.production.map(p => p.damaged), backgroundColor: Theme.bad, borderRadius: 8 },
             ],
           },
           options: { scales: { y: { beginAtZero: true, title: { display: true, text: 'Quantity' } } } },
         });
       }
 
-      const sc = $('#d-sup');
-      if (!d.supplier_perf.length) emptyChart(sc, 'No delivered supplier orders yet');
-      else {
-        showCanvas(sc);
-        chart(sc, {
-          type: 'bar',
-          data: {
-            labels: d.supplier_perf.map(s => s.supplier),
-            datasets: [{ label: 'Avg delivery days', data: d.supplier_perf.map(s => s.avg_days),
-              backgroundColor: d.supplier_perf.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 4 }],
-          },
-          options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Days' } } } },
-        });
-      }
+      lastData = d;
+      drawEmployees();
 
       const mc = $('#d-mat');
       const stock = d.stock.filter(s => s.stock > 0);
@@ -1998,8 +2565,8 @@ registerPage('suppliers', {
           chart($('#s-an-chart', back), {
             type: 'bar',
             data: { labels: names, datasets: [
-              { label: 'Total orders', data: names.map(n => perf[n].total), backgroundColor: '#3498DB' },
-              { label: 'Delivered', data: names.map(n => perf[n].delivered), backgroundColor: '#27AE60' },
+              { label: 'Total orders', data: names.map(n => perf[n].total), backgroundColor: Theme.alt },
+              { label: 'Delivered', data: names.map(n => perf[n].delivered), backgroundColor: Theme.ink },
             ] },
             options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
           });
@@ -2323,7 +2890,7 @@ registerPage('sales', {
       </div>
 
       <div class="tab-panel" data-tab="perf">
-        <div class="card" style="background:#EBF5FB"><h3 id="sa-month" style="margin:0"></h3></div>
+        <div class="card highlight"><h3 id="sa-month" style="margin:0"></h3></div>
         <div class="stats" id="sa-stats"></div>
         <div class="grid cols-2">
           <div class="card"><h3>Daily Sales (recent 15 days)</h3><div class="chart-box"><canvas id="sa-c-daily"></canvas></div></div>
@@ -2430,16 +2997,16 @@ registerPage('sales', {
       const dc = $('#sa-c-daily');
       if (!dk.length) emptyChart(dc, 'No sales yet'); else {
         showCanvas(dc);
-        chart(dc, { type: 'bar', data: { labels: dk.map(k => k.slice(5)), datasets: [{ label: 'Rs', data: dk.map(k => daily[k]), backgroundColor: '#4472C4', borderRadius: 4 }] },
+        chart(dc, { type: 'bar', data: { labels: dk.map(k => k.slice(5)), datasets: [{ label: 'Rs', data: dk.map(k => daily[k]), backgroundColor: Theme.ink, borderRadius: 4 }] },
           options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
       }
       const last12 = { labels: mo.labels.slice(-12), totals: mo.totals.slice(-12) };
       const tc = $('#sa-c-trend'), mc = $('#sa-c-month');
       if (!last12.labels.length) { emptyChart(tc, 'No monthly data'); emptyChart(mc, 'No monthly data'); } else {
         showCanvas(tc); showCanvas(mc);
-        chart(tc, { type: 'line', data: { labels: last12.labels, datasets: [{ label: 'Monthly sales (Rs)', data: last12.totals, borderColor: '#E74C3C', backgroundColor: 'rgba(231,76,60,.12)', fill: true, tension: .3, pointRadius: 4 }] },
+        chart(tc, { type: 'line', data: { labels: last12.labels, datasets: [{ label: 'Monthly sales (Rs)', data: last12.totals, borderColor: Theme.ink, backgroundColor: Theme.soft, fill: true, tension: .3, pointRadius: 4 }] },
           options: { scales: { y: { beginAtZero: true } } } });
-        chart(mc, { type: 'bar', data: { labels: last12.labels, datasets: [{ label: 'Rs', data: last12.totals, backgroundColor: last12.labels.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 4 }] },
+        chart(mc, { type: 'bar', data: { labels: last12.labels, datasets: [{ label: 'Rs', data: last12.totals, backgroundColor: Theme.ink, borderRadius: 4 }] },
           options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
       }
       const byProd = {};
@@ -2878,6 +3445,7 @@ registerPage('productivity', {
         <button class="tab active" data-tab="att">👥 Employee Attendance</button>
         <button class="tab" data-tab="emp">👤 Employee Management</button>
         <button class="tab" data-tab="dash">📊 Productivity Dashboard</button>
+        <button class="tab" data-tab="job">🧾 Job Performance</button>
         <button class="tab" data-tab="rec">📄 Productivity Records</button>
         <button class="tab" data-tab="rep">📋 Reports & Analytics</button>
       </div>
@@ -2925,10 +3493,44 @@ registerPage('productivity', {
         <div class="card"><h3>Quick Statistics</h3><pre class="report" id="pd-stats"></pre></div>
       </div>
 
+      <div class="tab-panel" data-tab="job">
+        <div class="card">
+          <div class="toolbar">
+            <label><b>Job Number:</b></label>
+            <select id="jp-job"><option value="">All jobs - overview</option></select>
+            <label><b>Period:</b></label>
+            <select id="jp-period">${['Today', 'This Week', 'This Month', 'This Year', 'All Time'].map(p => `<option ${p === 'All Time' ? 'selected' : ''}>${p}</option>`).join('')}</select>
+            <button class="btn ghost sm" id="jp-export">⬇️ Export</button>
+            <span class="count" id="jp-note"></span>
+          </div>
+          <div class="stats" id="jp-cards" style="margin-bottom:0"></div>
+        </div>
+        <div class="card" id="jp-overview">
+          <h3>📁 All Jobs <span class="right">click a job to see its operation progress</span></h3>
+          <div id="jp-all"></div>
+        </div>
+        <div id="jp-detail" class="hidden">
+          <div class="grid cols-2">
+            <div class="card"><h3>📊 Pieces per Operation <span class="right">job file order</span></h3><div class="chart-box tall"><canvas id="jp-c-ops"></canvas></div></div>
+            <div class="card"><h3>📈 Daily Output</h3><div class="chart-box tall"><canvas id="jp-c-daily"></canvas></div></div>
+          </div>
+          <div class="card"><h3>⚙️ Operation Progress <span class="right" id="jp-ops-note"></span></h3><div id="jp-ops"></div></div>
+          <div class="card"><h3>📦 Line Status <span class="right">Line Balance = Line Input − Line Output (✎ = edited by admin)</span></h3>
+            <div class="grid cols-2">
+              <div class="chart-box"><canvas id="jp-c-line"></canvas></div>
+              <div><div id="jp-lines"></div>
+                <div class="form-actions"><button class="btn danger sm" id="jp-line-del">🗑️ Delete selected line entry</button></div></div>
+            </div>
+          </div>
+          <div class="card"><h3>👥 Employees on this Job</h3><div id="jp-emps"></div></div>
+        </div>
+      </div>
+
       <div class="tab-panel" data-tab="rec">
         <div class="card">
           <div class="toolbar">
             <label>Employee:</label><input id="rf-emp" placeholder="ID or name">
+            <label>Job:</label><select id="rf-job"><option value="">All jobs</option></select>
             <label>Date:</label><input type="date" id="rf-date">
             <button class="btn primary sm" id="rf-apply">Apply Filter</button>
             <button class="btn ghost sm" id="rf-clear">Clear</button>
@@ -2959,7 +3561,7 @@ registerPage('productivity', {
 
     let data = { records: [], attendance: [], employees: [] };
     let hw = {};
-    tabs(el, t => { if (t === 'dash') drawDashboard(); });
+    tabs(el, t => { if (t === 'dash') drawDashboard(); if (t === 'job') drawJobs(); });
 
     /* ---------------- attendance ---------------- */
     const attTable = new DataTable($('#att-table'), {
@@ -3016,8 +3618,7 @@ registerPage('productivity', {
     };
 
     /* ---------------- productivity dashboard ---------------- */
-    const periodFilter = recs => {
-      const p = $('#pd-period').value;
+    const periodFilter = (recs, p = $('#pd-period').value) => {
       const now = new Date(), t = today();
       let from = null;
       if (p === 'Today') return recs.filter(r => r.date === t);
@@ -3035,7 +3636,10 @@ registerPage('productivity', {
     function drawDashboard() {
       const recs = periodFilter(data.records.filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date)));
       const pieces = recs.reduce((a, r) => a + r.pieces, 0);
-      const lineIn = recs.reduce((a, r) => a + r.line_in, 0), lineOut = recs.reduce((a, r) => a + r.line_out, 0);
+      const lineRecs = periodFilter((data.line_records || []).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date)));
+      const lineIn = recs.reduce((a, r) => a + r.line_in, 0) + lineRecs.reduce((a, r) => a + r.line_input, 0);
+      const lineBalExtra = lineRecs.reduce((a, r) => a + r.line_balance - (r.line_input - r.line_output), 0);   // admin edits
+      const lineOut = recs.reduce((a, r) => a + r.line_out, 0) + lineRecs.reduce((a, r) => a + r.line_output, 0);
       const byEmp = Object.entries(sumBy(recs, 'employee_name')).sort((a, b) => b[1] - a[1]);
       const top = byEmp[0];
       $('#pd-cards').innerHTML = `
@@ -3048,13 +3652,13 @@ registerPage('productivity', {
       const c1 = $('#pd-trend');
       if (!tk.length) emptyChart(c1, 'No data for this period'); else {
         showCanvas(c1);
-        chart(c1, { type: 'line', data: { labels: tk, datasets: [{ label: 'Pieces', data: tk.map(k => trend[k]), borderColor: '#3498DB', backgroundColor: 'rgba(52,152,219,.15)', fill: true, tension: .3 }] },
+        chart(c1, { type: 'line', data: { labels: tk, datasets: [{ label: 'Pieces', data: tk.map(k => trend[k]), borderColor: Theme.ink, backgroundColor: Theme.soft, fill: true, tension: .3 }] },
           options: { scales: { y: { beginAtZero: true } } } });
       }
       const c2 = $('#pd-emp'), top10 = byEmp.slice(0, 10);
       if (!top10.length) emptyChart(c2, 'No data for this period'); else {
         showCanvas(c2);
-        chart(c2, { type: 'bar', data: { labels: top10.map(e => e[0]), datasets: [{ label: 'Pieces', data: top10.map(e => e[1]), backgroundColor: top10.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 4 }] },
+        chart(c2, { type: 'bar', data: { labels: top10.map(e => e[0]), datasets: [{ label: 'Pieces', data: top10.map(e => e[1]), backgroundColor: Theme.ink, borderRadius: 4 }] },
           options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
       }
       const tasks = Object.entries(sumBy(recs, 'task_type')).sort((a, b) => b[1] - a[1]);
@@ -3072,11 +3676,11 @@ registerPage('productivity', {
       const c4 = $('#pd-hour');
       if (!hk.length) emptyChart(c4, 'No data for this period'); else {
         showCanvas(c4);
-        chart(c4, { type: 'line', data: { labels: hk, datasets: [{ label: 'Pieces', data: hk.map(h => hours[h]), borderColor: '#27AE60', backgroundColor: 'rgba(39,174,96,.15)', fill: true, tension: .3 }] },
+        chart(c4, { type: 'line', data: { labels: hk, datasets: [{ label: 'Pieces', data: hk.map(h => hours[h]), borderColor: Theme.ink, backgroundColor: Theme.soft, fill: true, tension: .3 }] },
           options: { scales: { y: { beginAtZero: true } } } });
       }
 
-      const bal = lineIn - lineOut;
+      const bal = lineIn - lineOut + lineBalExtra;
       let s = `PRODUCTIVITY STATISTICS\nPeriod: ${$('#pd-period').value}\nGenerated: ${new Date().toLocaleString('en-GB')}\n${'='.repeat(50)}\n\n`;
       if (!recs.length) s += 'No productivity data available for this period.\n';
       else {
@@ -3095,6 +3699,8 @@ registerPage('productivity', {
       rowKey: 'path',
       columns: [
         { key: 'employee_id', label: 'Employee ID' }, { key: 'employee_name', label: 'Employee Name' }, { key: 'date', label: 'Date' },
+        { key: 'job_number', label: 'Job No.', render: r => r.job_number ? esc(r.job_number) : '<span class="badge gray">-</span>' },
+        { key: 'item_name', label: 'Item' },
         { key: 'slot', label: 'Hour / Interval', value: r => r.slot_order ?? r.hour * 60, render: r => esc(r.slot || `${String(r.hour).padStart(2, '0')}:00`) },
         { key: 'task_type', label: 'Task Type (Operation)' },
         { key: 'pieces', label: 'Pieces', num: true }, { key: 'line_in', label: 'Line In', num: true }, { key: 'line_out', label: 'Line Out', num: true },
@@ -3103,11 +3709,13 @@ registerPage('productivity', {
     });
     recTable.onRender = v => { $('#rf-count').textContent = `${v.length} of ${recTable.rows.length} records`; };
     const applyRecFilter = () => {
-      const e = $('#rf-emp').value.trim().toLowerCase(), d = $('#rf-date').value;
-      recTable.setFilter(!e && !d ? null : r => (!e || `${r.employee_id} ${r.employee_name}`.toLowerCase().includes(e)) && (!d || r.date === d));
+      const e = $('#rf-emp').value.trim().toLowerCase(), d = $('#rf-date').value, j = $('#rf-job').value;
+      recTable.setFilter(!e && !d && !j ? null : r => (!e || `${r.employee_id} ${r.employee_name}`.toLowerCase().includes(e))
+        && (!d || r.date === d) && (!j || (j === NO_JOB ? !r.job_number : r.job_number === j)));
     };
     $('#rf-apply').onclick = applyRecFilter;
-    $('#rf-clear').onclick = () => { $('#rf-emp').value = ''; $('#rf-date').value = ''; recTable.setFilter(null); };
+    $('#rf-job').onchange = applyRecFilter;
+    $('#rf-clear').onclick = () => { $('#rf-emp').value = ''; $('#rf-date').value = ''; $('#rf-job').value = ''; recTable.setFilter(null); };
     $('#rec-del').onclick = async () => {
       const r = recTable.selected;
       if (!r) return toast('Please select a record to delete.', 'error');
@@ -3185,20 +3793,545 @@ registerPage('productivity', {
       $('#att-log').textContent = [...a.events].reverse().join('\n') || (a.error ? `Error: ${a.error}` : 'No activity yet.');
     };
 
+    /* ---------------- job performance (links records to Job File schedules) ---------------- */
+    const NO_JOB = '(No Job Number)';
+    const jobNumbers = () => {
+      const set = new Set((data.jobs || []).map(j => j.job_number).filter(Boolean));
+      data.records.forEach(r => { if (r.job_number) set.add(r.job_number); });
+      (data.line_records || []).forEach(r => { if (r.job_number) set.add(r.job_number); });
+      return [...set].sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    };
+    const fillJobSelects = () => {
+      const nums = jobNumbers();
+      [['#jp-job', 'All jobs - overview'], ['#rf-job', 'All jobs']].forEach(([sel, first]) => {
+        const s = $(sel), cur = s.value;
+        s.innerHTML = `<option value="">${first}</option>` + nums.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')
+          + (sel === '#rf-job' ? `<option value="${esc(NO_JOB)}">${esc(NO_JOB)}</option>` : '');
+        if ([...s.options].some(o => o.value === cur)) s.value = cur;
+      });
+    };
+
+    /* Combine a job's schedule (all its items) with the productivity records booked against it */
+    function lineTotals(list) {   // list newest first
+      const input = list.reduce((a, r) => a + r.line_input, 0), output = list.reduce((a, r) => a + r.line_output, 0);
+      const pk = list.find(r => r.packing_balance !== null && r.packing_balance !== undefined);
+      const balance = list.reduce((a, r) => a + r.line_balance, 0);   // saved balances, including admin edits
+      return { input, output, balance, packing: pk ? pk.packing_balance : null, count: list.length };
+    }
+
+    function analyseJob(jobNo, recs, lineRecs = []) {
+      const files = (data.jobs || []).filter(j => j.job_number === jobNo);
+      const ops = [], index = {};
+      const keyOf = (item, name) => `${norm(item)}|${norm(name)}`;
+      files.forEach(f => f.operations.forEach(o => {
+        const op = { item: f.item_name, seq: o.seq, name: o.operation_name, machine: o.machine_type, smv: num(o.smv),
+          planned: true, pieces: 0, earned: 0, emps: new Set(), records: 0, last: '' };
+        ops.push(op);
+        index[keyOf(f.item_name, o.operation_name)] = op;
+        if (!index[keyOf('', o.operation_name)]) index[keyOf('', o.operation_name)] = op;   // match records without an item
+      }));
+      const jr = recs.filter(r => r.job_number === jobNo);
+      jr.forEach(r => {
+        let op = index[keyOf(r.item_name, r.task_type)] || index[keyOf('', r.task_type)];
+        if (!op) {   // booked against the job but not in its job file (renamed or removed operation)
+          op = { item: r.item_name, seq: 999, name: r.task_type, machine: r.machine_type, smv: 0, planned: false,
+            pieces: 0, earned: 0, emps: new Set(), records: 0, last: '' };
+          ops.push(op);
+          index[keyOf(r.item_name, r.task_type)] = op;
+        }
+        op.pieces += r.pieces;
+        op.earned += r.pieces * op.smv;
+        op.emps.add(r.employee_name);
+        op.records++;
+        if (`${r.date} ${r.slot_order}` > op.last) op.last = `${r.date} ${r.slot_order}`;
+      });
+      ops.sort((a, b) => (a.planned === b.planned ? 0 : a.planned ? -1 : 1) || String(a.item).localeCompare(String(b.item)) || a.seq - b.seq);
+      ops.forEach(o => { o.last = o.last.split(' ')[0]; });
+      const planned = ops.filter(o => o.planned);
+      const pieces = jr.reduce((a, r) => a + r.pieces, 0);
+      const started = planned.filter(o => o.pieces > 0);
+      const bottleneck = pieces && planned.length ? planned.reduce((m, o) => (o.pieces < m.pieces ? o : m), planned[0]) : null;
+      const dates = [...new Set(jr.map(r => r.date))].sort();
+      const emps = {};
+      jr.forEach(r => {
+        const e = emps[r.employee_name] ||= { name: r.employee_name, id: r.employee_id, pieces: 0, ops: new Set(), earned: 0, days: new Set() };
+        const op = index[keyOf(r.item_name, r.task_type)] || index[keyOf('', r.task_type)];
+        e.pieces += r.pieces; e.ops.add(r.task_type); e.days.add(r.date); e.earned += r.pieces * (op ? op.smv : 0);
+      });
+      const lines = lineRecs.filter(r => r.job_number === jobNo);
+      const allDates = [...new Set([...dates, ...lines.map(r => r.date)])].sort();
+      return {
+        lines, line: lineTotals(lines), allDates,
+        jobNo, files, items: [...new Set([...files.map(f => f.item_name), ...jr.map(r => r.item_name)].filter(Boolean))],
+        ops, planned, started, pieces, records: jr.length, earned: ops.reduce((a, o) => a + o.earned, 0),
+        employees: Object.values(emps).sort((a, b) => b.pieces - a.pieces), dates, bottleneck,
+        daily: jr.reduce((m, r) => { m[r.date] = (m[r.date] || 0) + r.pieces; return m; }, {}),
+      };
+    }
+
+    const statCard = (label, value, ico, small = false) =>
+      `<div class="stat"><div class="ico">${ico}</div><div class="label">${esc(label)}</div><div class="value" ${small ? 'style="font-size:17px"' : ''}>${value}</div></div>`;
+
+    const jpAll = new DataTable($('#jp-all'), {
+      rowKey: 'jobNo',
+      columns: [
+        { key: 'jobNo', label: 'Job Number' }, { key: 'items', label: 'Item(s)', value: r => r.items.join(', ') },
+        { key: 'plannedCount', label: 'Operations', num: true, value: r => r.planned.length },
+        { key: 'startedCount', label: 'Ops Started', num: true, value: r => r.started.length,
+          render: r => r.planned.length ? `${r.started.length} / ${r.planned.length}` : '-' },
+        { key: 'pieces', label: 'Total Pieces', num: true, render: r => fmtInt(r.pieces) },
+        { key: 'earned', label: 'Earned Min', num: true, render: r => r.earned ? fmt(r.earned, 1) : '-' },
+        { key: 'lineIn', label: 'Line In', num: true, value: r => r.line.input, render: r => r.line.count ? fmtInt(r.line.input) : '-' },
+        { key: 'lineOut', label: 'Line Out', num: true, value: r => r.line.output, render: r => r.line.count ? fmtInt(r.line.output) : '-' },
+        { key: 'lineBal', label: 'Line Balance', num: true, value: r => r.line.balance,
+          render: r => !r.line.count ? '-' : r.line.balance < 0 ? `<span class="badge red">${fmtInt(r.line.balance)}</span>` : fmtInt(r.line.balance) },
+        { key: 'packBal', label: 'Packing Bal.', num: true, value: r => r.line.packing ?? '', render: r => r.line.packing === null ? '-' : fmtInt(r.line.packing) },
+        { key: 'empCount', label: 'Employees', num: true, value: r => r.employees.length },
+        { key: 'first', label: 'First Day', value: r => r.allDates[0] || '' },
+        { key: 'lastDay', label: 'Last Day', value: r => r.allDates.at(-1) || '' },
+        { key: 'bn', label: 'Bottleneck', value: r => r.bottleneck ? r.bottleneck.name : '',
+          render: r => r.bottleneck ? `<span class="badge red">${esc(r.bottleneck.name)} (${fmtInt(r.bottleneck.pieces)})</span>` : '-' },
+      ],
+      onSelect: r => { $('#jp-job').value = r.jobNo; drawJobs(); },
+    });
+    const jpOps = new DataTable($('#jp-ops'), {
+      columns: [
+        { key: 'item', label: 'Item' }, { key: 'seq', label: 'Seq', num: true, render: r => r.planned ? r.seq : '-' },
+        { key: 'name', label: 'Operation', render: r => esc(r.name) + (r.planned ? '' : ' <span class="badge gray">not in job file</span>') },
+        { key: 'machine', label: 'Machine Type' }, { key: 'smv', label: 'SMV', num: true, render: r => r.smv ? fmt(r.smv) : '-' },
+        { key: 'pieces', label: 'Pieces Done', num: true, render: r => r.pieces ? fmtInt(r.pieces) : '<span class="badge red">0</span>' },
+        { key: 'earned', label: 'Earned Min', num: true, render: r => r.earned ? fmt(r.earned, 1) : '-' },
+        { key: 'emps', label: 'Employees', value: r => [...r.emps].join(', ') },
+        { key: 'records', label: 'Entries', num: true }, { key: 'last', label: 'Last Entry' },
+      ],
+    });
+    const jpEmps = new DataTable($('#jp-emps'), {
+      columns: [
+        { key: 'id', label: 'Employee ID' }, { key: 'name', label: 'Employee' },
+        { key: 'pieces', label: 'Pieces', num: true, render: r => fmtInt(r.pieces) },
+        { key: 'opsList', label: 'Operations', value: r => [...r.ops].join(', ') },
+        { key: 'earned', label: 'Earned Min', num: true, render: r => r.earned ? fmt(r.earned, 1) : '-' },
+        { key: 'dayCount', label: 'Days', num: true, value: r => r.days.size },
+      ],
+    });
+
+    const jpLines = new DataTable($('#jp-lines'), {
+      rowKey: 'id',
+      columns: [
+        { key: 'date', label: 'Date' },
+        { key: 'recorded_at', label: 'Time', render: r => r.recorded_at ? esc(new Date(r.recorded_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })) : '-' },
+        { key: 'line_input', label: 'Line In', num: true }, { key: 'line_output', label: 'Line Out', num: true },
+        { key: 'line_balance', label: 'Balance', num: true,
+          render: r => (r.line_balance < 0 ? `<span class="badge red">${r.line_balance}</span>` : r.line_balance)
+            + (r.balance_edited ? ' <span class="badge gray" title="Edited by admin">✎ edited</span>' : '') },
+        { key: 'packing_balance', label: 'Packing Bal.', num: true, render: r => r.packing_balance === null ? '-' : fmtInt(r.packing_balance) },
+        { key: 'recorded_by', label: 'Entered By' },
+      ],
+      emptyText: 'No line entries for this job in this period',
+    });
+    $('#jp-line-del').onclick = async () => {
+      const r = jpLines.selected;
+      if (!r) return toast('Select a line entry first', 'error');
+      if (!(await confirmBox(`Delete line entry of ${r.date}?\nLine In ${r.line_input} • Line Out ${r.line_output} • Packing ${r.packing_balance ?? '-'}`, 'Delete'))) return;
+      if (await act(api('DELETE', `/api/line-records/${encodeURIComponent(r.id)}`))) load();
+    };
+
+    let jpCurrent = null;
+    function drawJobs() {
+      const period = $('#jp-period').value;
+      const recs = periodFilter(data.records.filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date)), period);
+      const jobNo = $('#jp-job').value;
+      const lineRecs = periodFilter((data.line_records || []).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date)), period);
+      const noJob = recs.filter(r => !r.job_number);
+      $('#jp-note').textContent = noJob.length ? `${noJob.length} record(s) in this period have no job number` : '';
+      $('#jp-overview').classList.toggle('hidden', !!jobNo);
+      $('#jp-detail').classList.toggle('hidden', !jobNo);
+
+      if (!jobNo) {
+        const all = jobNumbers().map(n => analyseJob(n, recs, lineRecs));
+        jpCurrent = { overview: all };
+        jpAll.setRows(all);
+        const active = all.filter(j => j.pieces > 0);
+        $('#jp-cards').innerHTML =
+          statCard('Job Numbers', fmtInt(all.length), '📁') +
+          statCard('Jobs With Output', fmtInt(active.length), '🏭') +
+          statCard('Pieces on Jobs', fmtInt(active.reduce((a, j) => a + j.pieces, 0)), '🧵') +
+          statCard('Earned Minutes', fmt(active.reduce((a, j) => a + j.earned, 0), 0), '⏱️') +
+          statCard('Line Balance (all jobs)', fmtInt(all.reduce((a, j) => a + j.line.balance, 0)), '⚖️') +
+          statCard('No Job Number', fmtInt(noJob.reduce((a, r) => a + r.pieces, 0)) + ' <small style="font-size:12px;font-weight:500">pcs</small>', '❔');
+        return;
+      }
+
+      const j = analyseJob(jobNo, recs, lineRecs);
+      jpCurrent = { job: j };
+      const bn = j.bottleneck;
+      $('#jp-cards').innerHTML =
+        statCard('Total Pieces', fmtInt(j.pieces), '🧵') +
+        statCard('Earned Minutes', j.earned ? fmt(j.earned, 1) : '-', '⏱️') +
+        statCard('Operations Started', `${j.started.length} / ${j.planned.length}`, '⚙️') +
+        statCard('Employees', fmtInt(j.employees.length), '👥') +
+        statCard('Days Active', fmtInt(j.allDates.length), '📅') +
+        statCard('Line Input', j.line.count ? fmtInt(j.line.input) : '-', '📥') +
+        statCard('Line Output', j.line.count ? fmtInt(j.line.output) : '-', '📤') +
+        statCard('Line Balance', j.line.count ? `<span style="color:${j.line.balance < 0 ? 'var(--red, #e74c3c)' : 'inherit'}">${fmtInt(j.line.balance)}</span>` : '-', '⚖️') +
+        statCard('Packing Balance', j.line.packing === null ? '-' : fmtInt(j.line.packing), '📦') +
+        statCard('Bottleneck', bn ? `${esc(bn.name)}<br><small style="font-size:12px;font-weight:500">${fmtInt(bn.pieces)} pcs</small>` : '-', '🚧', true);
+      $('#jp-ops-note').textContent = `${j.items.join(', ') || '-'}${j.files.length ? '' : ' • no job file found for this number'}`;
+      jpOps.setRows(j.ops);
+      jpEmps.setRows(j.employees);
+      jpLines.setRows(j.lines);
+      const c3 = $('#jp-c-line');
+      const ld = {};
+      j.lines.forEach(r => { const d = ld[r.date] ||= { in: 0, out: 0, bal: 0 }; d.in += r.line_input; d.out += r.line_output; d.bal += r.line_balance; });
+      const lk = Object.keys(ld).sort();
+      if (!lk.length) emptyChart(c3, 'No line entries for this job in this period'); else {
+        showCanvas(c3);
+        let running = 0;
+        const cum = lk.map(k => (running += ld[k].bal));
+        chart(c3, {
+          data: {
+            labels: lk,
+            datasets: [
+              { type: 'bar', label: 'Line Input', data: lk.map(k => ld[k].in), backgroundColor: Theme.alt, borderRadius: 6, order: 2 },
+              { type: 'bar', label: 'Line Output', data: lk.map(k => ld[k].out), backgroundColor: Theme.ink, borderRadius: 6, order: 2 },
+              { type: 'line', label: 'Line Balance (running)', data: cum, borderColor: Theme.bad, backgroundColor: Theme.bad, tension: .3, order: 1 },
+            ],
+          },
+          options: { scales: { y: { beginAtZero: true } } },
+        });
+      }
+
+      const c1 = $('#jp-c-ops');
+      if (!j.ops.length) emptyChart(c1, 'No operations in the job file'); else {
+        showCanvas(c1);
+        const multi = j.items.length > 1;
+        chart(c1, {
+          type: 'bar',
+          data: {
+            labels: j.ops.map(o => `${o.planned ? o.seq + '. ' : ''}${o.name}${multi && o.item ? ' (' + o.item + ')' : ''}`),
+            datasets: [{ label: 'Pieces', data: j.ops.map(o => o.pieces),
+              backgroundColor: j.ops.map(o => (bn && o === bn ? Theme.bad : o.planned ? Theme.ink : Theme.alt)), borderRadius: 6 }],
+          },
+          options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } },
+        });
+      }
+      const c2 = $('#jp-c-daily'), dk = Object.keys(j.daily).sort();
+      if (!dk.length) emptyChart(c2, 'No output recorded for this job in this period'); else {
+        showCanvas(c2);
+        chart(c2, { type: dk.length === 1 ? 'bar' : 'line',
+          data: { labels: dk, datasets: [{ label: 'Pieces', data: dk.map(k => j.daily[k]), borderColor: Theme.ink, backgroundColor: dk.length === 1 ? Theme.ink : Theme.soft, fill: true, tension: .3 }] },
+          options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+      }
+    }
+    $('#jp-job').onchange = drawJobs;
+    $('#jp-period').onchange = drawJobs;
+    $('#jp-export').onclick = () => {
+      if (!jpCurrent) return;
+      if (jpCurrent.overview) {
+        download(`job_performance_${today()}.csv`, toCSV(jpCurrent.overview, jpAll.columns.map(c => ({ label: c.label, value: r => jpAll.cellValue(c, r) }))));
+      } else {
+        const j = jpCurrent.job;
+        if (j.lines.length) download(`job_${j.jobNo.replace(/[^\w-]+/g, '_')}_line_status_${today()}.csv`, toCSV(j.lines.map(r => ({ ...r, job: j.jobNo })), [
+          { key: 'job', label: 'Job Number' }, { key: 'date', label: 'Date' }, { key: 'line_input', label: 'Line Input' },
+          { key: 'line_output', label: 'Line Output' }, { key: 'line_balance', label: 'Line Balance' },
+          { key: 'balance_edited', label: 'Balance Edited', value: r => r.balance_edited ? 'Yes' : 'No' },
+          { key: 'packing_balance', label: 'Packing Balance', value: r => r.packing_balance ?? '' },
+          { key: 'recorded_by', label: 'Entered By' }, { key: 'recorded_at', label: 'Recorded At' }]));
+        download(`job_${j.jobNo.replace(/[^\w-]+/g, '_')}_${today()}.csv`, toCSV(j.ops.map(o => ({ ...o, job: j.jobNo })), [
+          { key: 'job', label: 'Job Number' }, ...jpOps.columns.map(c => ({ label: c.label, value: r => c.key === 'name' ? r.name : jpOps.cellValue(c, r) }))]));
+      }
+    };
+
     const load = async () => {
       data = await api('GET', '/api/productivity');
+      data.jobs = data.jobs || [];
       attTable.setRows([...data.attendance].sort((x, y) => `${dmyToIso(y.date)}${y.time_in}`.localeCompare(`${dmyToIso(x.date)}${x.time_in}`)));
       empTable.setRows(data.employees);
       const so = r => String(r.slot_order ?? r.hour * 60).padStart(5, '0');
       recTable.setRows([...data.records].sort((x, y) => `${y.date}${so(y)}${y.recorded_at}`.localeCompare(`${x.date}${so(x)}${x.recorded_at}`)));
+      fillJobSelects();
       applyRecFilter();
       quickStats();
       if ($('.tab[data-tab=dash]', el).classList.contains('active')) drawDashboard();
+      if ($('.tab[data-tab=job]', el).classList.contains('active')) drawJobs();
     };
     $('#pr-reload').onclick = () => Promise.all([load(), loadHw()]).then(() => toast('Data refreshed', 'success'));
 
     await Promise.all([load(), loadHw()]);
     every(10000, () => { if ($('#pd-auto')?.checked) load().catch(() => {}); loadHw(); });
+  },
+});
+
+</script>
+<script>/* ===== jobfile ===== */
+/* Job File - operation schedule per Job Number + Item */
+'use strict';
+
+registerPage('jobfile', {
+  title: 'Job File',
+  module: 'jobfile',
+  async render(el) {
+    const canEdit = canUse('jobfile_edit');
+    el.innerHTML = `
+      <div class="page-head"><div><h1>📁 Job File</h1>
+        <div class="sub">Operation schedule for every item in each job</div></div>
+        <div class="actions">
+          <button class="btn primary" id="j-new">➕ New Job File</button>
+        </div></div>
+
+      <div class="card">
+        <h3>Job Details <span class="editing-note" id="j-mode">New job file</span></h3>
+        <form id="j-form" autocomplete="off" onsubmit="return false">
+          <div class="form-grid">
+            ${field('job_number', 'Job Number', { required: true, placeholder: 'e.g. JOB-2026-014', list: 'j-job-list' })}
+            ${field('item_name', 'Item Name', { required: true, placeholder: 'e.g. Classic Polo', list: 'j-item-list' })}
+            ${field('notes', 'Job Notes', { cls: 'wide', placeholder: 'Optional - customer, style no., remarks…' })}
+          </div>
+          <datalist id="j-job-list"></datalist>
+          <datalist id="j-item-list"></datalist>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ Operation Schedule <span class="right" id="j-summary"></span></h3>
+        <div class="table-wrap" style="max-height:none">
+          <table class="data" id="j-ops">
+            <thead><tr>
+              <th style="width:52px">Seq</th><th>Operation Name</th><th style="width:300px">Machine Type</th>
+              <th style="width:100px">SMV (min)</th><th style="width:22%">Notes</th><th style="width:118px"></th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <datalist id="j-op-list"></datalist>
+        <datalist id="j-machine-list"></datalist>
+        <div class="form-actions">
+          <button type="button" class="btn ghost" id="j-add-op">➕ Add Operation</button>
+          <span style="flex:1"></span>
+          <button type="button" class="btn success" id="j-save">💾 Save Job File</button>
+          <button type="button" class="btn purple" id="j-dup">⧉ Duplicate</button>
+          <button type="button" class="btn ghost" id="j-print">🖨️ Print</button>
+          <button type="button" class="btn danger" id="j-delete">🗑️ Delete</button>
+        </div>
+        <div id="j-machines" class="status-bar" style="flex-wrap:wrap;margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <h3>📂 Job Files</h3>
+        <div class="toolbar" id="j-search"></div>
+        <div id="j-table"></div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn ghost sm" id="j-export">⬇️ Export all operations (CSV)</button>
+        </div>
+      </div>`;
+
+    const form = $('#j-form');
+    const tbody = $('#j-ops tbody');
+    let meta = { machine_types: [], operation_names: [], items: [] };
+    let editingKey = null;
+    let ops = [];
+    let dirty = false;
+
+    /* ---------------- operation rows ---------------- */
+    const blankOp = () => ({ operation_name: '', machine_type: '', smv: '', notes: '' });
+
+    function drawOps() {
+      if (!ops.length) ops.push(blankOp());
+      tbody.innerHTML = ops.map((o, i) => `
+        <tr data-i="${i}" style="cursor:default">
+          <td class="num"><b>${i + 1}</b></td>
+          <td><input class="op-in cell-input" data-k="operation_name" list="j-op-list" value="${esc(o.operation_name)}" placeholder="e.g. Collar attach"></td>
+          <td><input class="op-in cell-input" data-k="machine_type" list="j-machine-list" value="${esc(o.machine_type)}" placeholder="Select or type"></td>
+          <td><input class="op-in cell-input" data-k="smv" type="number" step="0.01" min="0" value="${esc(o.smv)}" placeholder="0.00"></td>
+          <td><input class="op-in cell-input" data-k="notes" value="${esc(o.notes)}" placeholder="Optional"></td>
+          <td style="white-space:nowrap">
+            <button class="btn ghost sm op-up" title="Move up" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn ghost sm op-down" title="Move down" ${i === ops.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="btn ghost sm op-del" title="Remove">✕</button>
+          </td>
+        </tr>`).join('');
+      summarize();
+    }
+
+    function summarize() {
+      const filled = ops.filter(o => o.operation_name.trim());
+      const smv = filled.reduce((a, o) => a + num(o.smv), 0);
+      $('#j-summary').textContent = `${filled.length} operation(s) • Total SMV ${smv.toFixed(2)} min`;
+      const m = {};
+      filled.forEach(o => { const k = o.machine_type.trim() || 'Not set'; m[k] = (m[k] || 0) + 1; });
+      $('#j-machines').innerHTML = Object.keys(m).length
+        ? '<b style="margin-right:6px">Machines needed:</b>' + Object.entries(m).sort((a, b) => b[1] - a[1])
+          .map(([k, v]) => `<span class="badge ${k === 'Not set' ? 'red' : 'blue'}">${esc(k)} × ${v}</span>`).join(' ')
+        : '';
+    }
+
+    tbody.addEventListener('input', e => {
+      const inp = e.target.closest('.op-in');
+      if (!inp) return;
+      ops[+inp.closest('tr').dataset.i][inp.dataset.k] = inp.value;
+      dirty = true;
+      summarize();
+    });
+    tbody.addEventListener('keydown', e => {
+      // Enter in the last row's field adds a new operation row
+      if (e.key !== 'Enter' || !e.target.closest('.op-in')) return;
+      e.preventDefault();
+      const i = +e.target.closest('tr').dataset.i;
+      if (i === ops.length - 1) addOp(); else $(`tr[data-i="${i + 1}"] .op-in`, tbody).focus();
+    });
+    tbody.addEventListener('click', e => {
+      const tr = e.target.closest('tr');
+      if (!tr) return;
+      const i = +tr.dataset.i;
+      if (e.target.closest('.op-up') && i > 0) [ops[i - 1], ops[i]] = [ops[i], ops[i - 1]];
+      else if (e.target.closest('.op-down') && i < ops.length - 1) [ops[i + 1], ops[i]] = [ops[i], ops[i + 1]];
+      else if (e.target.closest('.op-del')) ops.splice(i, 1);
+      else return;
+      dirty = true;
+      drawOps();
+    });
+    const addOp = () => {
+      ops.push(blankOp());
+      dirty = true;
+      drawOps();
+      $(`tr[data-i="${ops.length - 1}"] .op-in`, tbody).focus();
+    };
+    $('#j-add-op').onclick = addOp;
+    form.addEventListener('input', () => { dirty = true; });
+
+    /* ---------------- job list ---------------- */
+    const table = new DataTable($('#j-table'), {
+      rowKey: 'key',
+      columns: [
+        { key: 'job_number', label: 'Job Number' }, { key: 'item_name', label: 'Item Name' },
+        { key: 'op_count', label: 'Operations', num: true }, { key: 'total_smv', label: 'Total SMV', num: true, render: r => fmt(r.total_smv) },
+        { key: 'machines', label: 'Machine Types', value: r => r.machines.join(', ') },
+        { key: 'updated_at', label: 'Last Updated', value: r => r.updated_at || r.created_at },
+      ],
+      onSelect: r => loadJob(r),
+    });
+    searchBar($('#j-search'), table, {
+      options: [['*', 'All fields'], ['job_number', 'Job Number'], ['item_name', 'Item Name'], ['ops_text', 'Operation / Machine']],
+      placeholder: 'Search job, item, operation or machine…',
+    });
+
+    async function confirmDiscard() {
+      return !dirty || confirmBox('You have unsaved changes in this job file. Discard them?', 'Discard', 'warning');
+    }
+
+    async function loadJob(r) {
+      if (editingKey === r.key) return;
+      if (!(await confirmDiscard())) { table.clearSelection(); return; }
+      editingKey = r.key;
+      fillForm(form, r);
+      ops = r.operations.map(o => ({ operation_name: o.operation_name || '', machine_type: o.machine_type || '', smv: o.smv ?? '', notes: o.notes || '' }));
+      dirty = false;
+      $('#j-mode').textContent = `Editing ${r.job_number} • ${r.item_name}`;
+      drawOps();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      $('#content').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function newJob(keepOps = false) {
+      editingKey = null;
+      const keep = readForm(form);
+      resetForm(form);
+      if (keepOps) { form.elements.item_name.value = keep.item_name; form.elements.notes.value = keep.notes; }
+      if (!keepOps) ops = [];
+      dirty = keepOps;
+      table.clearSelection();
+      $('#j-mode').textContent = keepOps ? 'Copy - enter the new Job Number (and Item if different), then Save' : 'New job file';
+      drawOps();
+    }
+    $('#j-new').onclick = async () => { if (await confirmDiscard()) newJob(); };
+
+    async function load() {
+      const r = await api('GET', '/api/jobfiles');
+      meta = r;
+      r.rows.forEach(x => { x.ops_text = x.operations.map(o => `${o.operation_name} ${o.machine_type}`).join(' | '); });
+      table.setRows(r.rows);
+      $('#j-job-list').innerHTML = [...new Set(r.rows.map(x => x.job_number))].map(v => `<option value="${esc(v)}">`).join('');
+      $('#j-item-list').innerHTML = r.items.map(v => `<option value="${esc(v)}">`).join('');
+      $('#j-op-list').innerHTML = r.operation_names.map(v => `<option value="${esc(v)}">`).join('');
+      $('#j-machine-list').innerHTML = r.machine_types.map(v => `<option value="${esc(v)}">`).join('');
+    }
+
+    /* ---------------- save / delete / duplicate ---------------- */
+    $('#j-save').onclick = async () => {
+      if (!canEdit) return toast("You don't have permission to edit job files", 'error');
+      const d = readForm(form);
+      const payload = { job_number: d.job_number, item_name: d.item_name, notes: d.notes,
+        operations: ops.filter(o => o.operation_name.trim() || o.machine_type.trim() || String(o.smv).trim() || o.notes.trim()) };
+      const r = await act(editingKey
+        ? api('PUT', `/api/jobfiles/${encodeURIComponent(editingKey)}`, payload)
+        : api('POST', '/api/jobfiles', payload));
+      if (!r) return;
+      dirty = false;
+      if (r.key) editingKey = r.key;
+      await load();
+      const row = table.rows.find(x => x.key === editingKey);
+      if (row) { $('#j-mode').textContent = `Editing ${row.job_number} • ${row.item_name}`; table.selected = row; table.render(); }
+    };
+    $('#j-delete').onclick = async () => {
+      if (!editingKey) return toast('Select a job file in the list first', 'error');
+      const d = readForm(form);
+      if (!(await confirmBox(`Delete job file ${d.job_number} - ${d.item_name} and its ${ops.length} operation(s)?`, 'Delete'))) return;
+      if (await act(api('DELETE', `/api/jobfiles/${encodeURIComponent(editingKey)}`))) { dirty = false; newJob(); load(); }
+    };
+    $('#j-dup').onclick = () => {
+      if (!ops.some(o => o.operation_name.trim())) return toast('Nothing to duplicate - add operations first', 'warn');
+      ops = ops.map(o => ({ ...o }));
+      newJob(true);
+      toast('Operations copied. Enter the new Job Number and Save.');
+      form.elements.job_number.focus();
+    };
+
+    /* ---------------- print / export ---------------- */
+    $('#j-print').onclick = () => {
+      const d = readForm(form);
+      const list = ops.filter(o => o.operation_name.trim());
+      if (!list.length) return toast('No operations to print', 'warn');
+      const smv = list.reduce((a, o) => a + num(o.smv), 0);
+      const w = window.open('', '_blank');
+      if (!w) return toast('Allow pop-ups to print', 'warn');
+      w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Job File ${esc(d.job_number)}</title>
+        <style>body{font-family:Segoe UI,Arial,sans-serif;color:#1d2939;max-width:900px;margin:24px auto;padding:0 20px}
+        h1{margin:0 0 4px;font-size:24px} .meta{display:flex;gap:30px;margin:12px 0 18px;font-size:14px}
+        table{width:100%;border-collapse:collapse;font-size:13px} th,td{border:1px solid #cfd6e0;padding:7px 9px;text-align:left}
+        th{background:#eef2f8} td.n{text-align:right} tfoot td{font-weight:700;background:#f6f8fb}
+        .bar{text-align:right;margin-bottom:10px} @media print{.bar{display:none}}</style></head><body>
+        <div class="bar"><button onclick="print()">🖨️ Print / Save as PDF</button></div>
+        <h1>JOB FILE - Operation Schedule</h1>
+        <div class="meta"><div><b>Job Number:</b> ${esc(d.job_number)}</div><div><b>Item:</b> ${esc(d.item_name)}</div>
+          <div><b>Printed:</b> ${esc(new Date().toLocaleString('en-GB'))}</div></div>
+        ${d.notes ? `<p><b>Notes:</b> ${esc(d.notes)}</p>` : ''}
+        <table><thead><tr><th>Seq</th><th>Operation</th><th>Machine Type</th><th>SMV (min)</th><th>Notes</th></tr></thead><tbody>
+        ${list.map((o, i) => `<tr><td class="n">${i + 1}</td><td>${esc(o.operation_name)}</td><td>${esc(o.machine_type)}</td><td class="n">${o.smv === '' ? '' : num(o.smv).toFixed(2)}</td><td>${esc(o.notes)}</td></tr>`).join('')}
+        </tbody><tfoot><tr><td></td><td>${list.length} operations</td><td></td><td class="n">${smv.toFixed(2)}</td><td></td></tr></tfoot></table>
+        </body></html>`);
+      w.document.close();
+    };
+    $('#j-export').onclick = () => {
+      const lines = [];
+      table.view.forEach(j => j.operations.forEach((o, i) => lines.push({
+        job_number: j.job_number, item_name: j.item_name, seq: i + 1, operation_name: o.operation_name,
+        machine_type: o.machine_type, smv: o.smv ?? '', notes: o.notes || '',
+      })));
+      if (!lines.length) return toast('No operations to export', 'warn');
+      download(`job_files_${today()}.csv`, toCSV(lines, [
+        { key: 'job_number', label: 'Job Number' }, { key: 'item_name', label: 'Item Name' }, { key: 'seq', label: 'Seq' },
+        { key: 'operation_name', label: 'Operation' }, { key: 'machine_type', label: 'Machine Type' },
+        { key: 'smv', label: 'SMV (min)' }, { key: 'notes', label: 'Notes' }]));
+    };
+
+    if (!canEdit) {
+      ['#j-save', '#j-delete', '#j-dup', '#j-add-op', '#j-new'].forEach(s => { $(s).disabled = true; });
+      $('#j-mode').textContent = 'View only for your role';
+    }
+
+    App.cleanup.push(() => { dirty = false; });
+    drawOps();
+    await load();
   },
 });
 
@@ -3217,6 +4350,7 @@ const NAV = [
   ['barcode', '🏷️', 'Barcode'],
   ['materials', '🧵', 'Raw Materials'],
   ['productivity', '📊', 'Emp Productivity'],
+  ['jobfile', '📁', 'Job File'],
 ];
 
 function showLogin() {
@@ -3242,6 +4376,7 @@ function showApp() {
 }
 
 function runCleanup() {
+  document.querySelectorAll('.modal-back').forEach(m => m.remove());
   App.cleanup.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
   App.cleanup = [];
 }
@@ -3308,6 +4443,15 @@ $('#nav').addEventListener('click', e => {
   const target = `#/${b.dataset.page}`;
   if (location.hash === target) route(); else location.hash = target;
 });
+
+document.querySelectorAll('.theme-toggle').forEach(b => b.addEventListener('click', () => {
+  Theme.toggle();
+  if (App.user && !$('#app-view').classList.contains('hidden')) {
+    $$('canvas').forEach(c => { if (c._chart) c._chart.update('none'); });
+    route();   // re-render so every chart picks up the new colours
+  }
+}));
+Theme.updateButtons();
 
 $('#menu-toggle').onclick = () => $('#sidebar').classList.toggle('open');
 window.addEventListener('hashchange', route);
