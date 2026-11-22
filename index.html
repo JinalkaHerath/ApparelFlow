@@ -573,6 +573,87 @@ body::after {
   html[data-theme="dark"] .sidebar { background: linear-gradient(165deg, rgba(0, 66, 96, .95), rgba(0, 96, 124, .92)) !important; }
 }
 
+/* =====================================================================
+   STANDARD UI COLOURS
+   Blue = primary action / selection, Green = success, Amber = warning,
+   Red = danger / errors. Softer shades on the dark theme.
+   ===================================================================== */
+:root {
+  --ui-blue: #2563EB;   --ui-blue-h: #1D4ED8;  --ui-blue-bg: rgba(37, 99, 235, .10);
+  --ui-green: #059669;  --ui-green-h: #047857; --ui-green-bg: rgba(5, 150, 105, .11);
+  --ui-red: #DC2626;    --ui-red-h: #B91C1C;   --ui-red-bg: rgba(220, 38, 38, .09);
+  --ui-amber: #F59E0B;  --ui-amber-h: #D97706; --ui-amber-bg: rgba(245, 158, 11, .14); --ui-amber-text: #92400E;
+  --ui-violet: #7C3AED; --ui-teal: #0D9488;    --ui-wa: #1DA851;
+  --ui-slate-bg: rgba(100, 116, 139, .12);     --ui-slate-text: #475569;
+  --accent-bg: var(--ui-blue); --accent-fg: #fff;
+  --danger: var(--ui-red); --danger-bg: var(--ui-red-bg);
+  --ok: var(--ui-green); --ok-bg: var(--ui-green-bg);
+  --warn: var(--ui-amber); --warn-bg: var(--ui-amber-bg);
+  --sel: rgba(37, 99, 235, .09);
+  --focus-ring: rgba(37, 99, 235, .22);
+}
+html[data-theme="dark"] {
+  --ui-blue: #3B82F6;   --ui-blue-h: #2563EB;  --ui-blue-bg: rgba(96, 165, 250, .14);
+  --ui-green: #10B981;  --ui-green-h: #059669; --ui-green-bg: rgba(52, 211, 153, .13);
+  --ui-red: #EF4444;    --ui-red-h: #DC2626;   --ui-red-bg: rgba(248, 113, 113, .13);
+  --ui-amber: #F59E0B;  --ui-amber-h: #D97706; --ui-amber-bg: rgba(251, 191, 36, .14); --ui-amber-text: #FCD34D;
+  --ui-violet: #8B5CF6; --ui-teal: #14B8A6;    --ui-wa: #22A35A;
+  --ui-slate-bg: rgba(148, 163, 184, .14);     --ui-slate-text: #CBD5E1;
+  --danger: #F87171; --ok: #34D399; --warn: #FBBF24;
+  --sel: rgba(96, 165, 250, .14);
+  --focus-ring: rgba(96, 165, 250, .30);
+}
+
+/* buttons: solid standard colours, white text (amber uses dark text for contrast) */
+.btn.primary  { background: var(--ui-blue)  !important; color: #fff !important; border-color: transparent !important; }
+.btn.success  { background: var(--ui-green) !important; color: #fff !important; border-color: transparent !important; }
+.btn.danger   { background: var(--ui-red)   !important; color: #fff !important; border-color: transparent !important; }
+.btn.warning  { background: var(--ui-amber) !important; color: #1F2937 !important; border-color: transparent !important; }
+.btn.purple   { background: var(--ui-violet) !important; color: #fff !important; border-color: transparent !important; }
+.btn.teal     { background: var(--ui-teal)  !important; color: #fff !important; border-color: transparent !important; }
+.btn.whatsapp { background: var(--ui-wa)    !important; color: #fff !important; border-color: transparent !important; }
+.btn.primary:hover:not(:disabled)  { background: var(--ui-blue-h)  !important; opacity: 1; }
+.btn.success:hover:not(:disabled)  { background: var(--ui-green-h) !important; opacity: 1; }
+.btn.danger:hover:not(:disabled)   { background: var(--ui-red-h)   !important; }
+.btn.warning:hover:not(:disabled)  { background: var(--ui-amber-h) !important; }
+.btn.purple:hover:not(:disabled), .btn.teal:hover:not(:disabled), .btn.whatsapp:hover:not(:disabled) { filter: brightness(.92); }
+.btn.ghost { color: var(--text); }
+.btn.sm.danger { background: var(--ui-red-bg) !important; color: var(--danger) !important; border: 1px solid var(--ui-red-bg) !important; }
+.btn.sm.danger:hover:not(:disabled) { background: var(--ui-red) !important; color: #fff !important; }
+
+/* links, focus, selection */
+a { color: var(--ui-blue); }
+.field input:focus, .field select:focus, .field textarea:focus, .toolbar input:focus, .toolbar select:focus, .cell-input:focus, .login-form input:focus {
+  box-shadow: 0 0 0 4px var(--focus-ring) !important; border-color: var(--ui-blue) !important;
+}
+table.data tbody tr.selected { background: var(--sel) !important; box-shadow: inset 3px 0 0 var(--ui-blue) !important; }
+.editing-note { color: var(--ui-blue) !important; }
+
+/* tabs: active tab in blue */
+.tab.active { color: var(--ui-blue) !important; }
+
+/* badges */
+.badge.green { background: var(--ok-bg); color: var(--ok); }
+.badge.red   { background: var(--danger-bg); color: var(--danger); }
+.badge.blue  { background: var(--ui-blue-bg); color: var(--ui-blue); }
+.badge.gray  { background: var(--ui-slate-bg); color: var(--ui-slate-text); }
+
+/* stat cards: coloured accent bar + tinted icon tile (colour comes from each card's --accent) */
+.stat { border-left: 4px solid var(--accent, var(--ui-blue)) !important; }
+.stat .ico { background: color-mix(in srgb, var(--accent, var(--ui-blue)) 15%, transparent) !important;
+  border-color: color-mix(in srgb, var(--accent, var(--ui-blue)) 25%, transparent) !important; box-shadow: none !important; }
+
+/* status, rows, toasts */
+.dot.on { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-bg); }
+.dot.off { background: var(--danger); }
+table.data tbody tr.row-low td { background: var(--danger-bg); color: var(--danger); }
+.toast.success { border-left-color: var(--ui-green); }
+.toast.error { border-left-color: var(--ui-red); }
+.toast.warn { border-left-color: var(--ui-amber); }
+.login-form .btn.primary { box-shadow: 0 6px 18px rgba(37, 99, 235, .28); }
+#d-emp-period { background: var(--glass-strong); color: var(--text); border: 1px solid var(--edge); font-weight: 600; }
+#d-emp-period:focus { outline: none; box-shadow: 0 0 0 3px var(--focus-ring); }
+
 </style>
 </head>
 <body>
@@ -1046,13 +1127,20 @@ const Theme = {
   },
   applyCharts() {
     const dark = Theme.get() === 'dark';
-    /* plain monochrome chart colours that follow the theme */
-    Object.assign(Theme, dark
-      ? { ink: '#e8e8ed', soft: 'rgba(232,232,237,.12)', alt: '#76767c', bad: '#ff7b6e' }
-      : { ink: '#1d1d1f', soft: 'rgba(29,29,31,.08)', alt: '#a1a1a6', bad: '#c4372b' });
-    PALETTE = dark
-      ? ['#f5f5f7', '#9c9ca1', '#5e5e63', '#d2d2d7', '#3a3a3c', '#86868b', '#e8e8ed', '#48484a', '#b8b8bd', '#2c2c2e', '#c7c7cc', '#6e6e73']
-      : ['#1d1d1f', '#6e6e73', '#a1a1a6', '#3a3a3c', '#d2d2d7', '#48484a', '#86868b', '#c7c7cc', '#2c2c2e', '#b8b8bd', '#5e5e63', '#e8e8ed'];
+    /* Standard UI colours (Tailwind-style 500 shades; lighter 400 shades on dark so they are easy on the eyes) */
+    const c = dark
+      ? { blue: '#60A5FA', green: '#34D399', amber: '#FBBF24', red: '#F87171', violet: '#A78BFA', pink: '#F472B6',
+          cyan: '#22D3EE', orange: '#FB923C', indigo: '#818CF8', teal: '#2DD4BF', lime: '#A3E635', slate: '#94A3B8' }
+      : { blue: '#3B82F6', green: '#10B981', amber: '#F59E0B', red: '#EF4444', violet: '#8B5CF6', pink: '#EC4899',
+          cyan: '#06B6D4', orange: '#F97316', indigo: '#6366F1', teal: '#14B8A6', lime: '#84CC16', slate: '#94A3B8' };
+    const fade = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(hex.slice(3, 5), 16)}, ${parseInt(hex.slice(5, 7), 16)}, ${a})`;
+    Object.assign(Theme, {
+      c, fade,
+      ink: c.blue, soft: fade(c.blue, dark ? .18 : .14),      // main data series
+      alt: c.slate,                                          // secondary / "other"
+      good: c.green, bad: c.red, warn: c.amber,              // meaning: done / problem / attention
+    });
+    PALETTE = [c.blue, c.green, c.amber, c.violet, c.pink, c.cyan, c.orange, c.indigo, c.teal, c.red, c.lime, c.slate];
     if (!window.Chart) return;
     Chart.defaults.color = dark ? '#a1a1a6' : '#6e6e73';
     Chart.defaults.font.family = '-apple-system, "Segoe UI", system-ui, Roboto, Arial, sans-serif';
@@ -2226,14 +2314,14 @@ registerPage('dashboard', {
       <div class="status-bar"><span><span class="dot on"></span>Dashboard Status: Active</span><span id="d-last"></span><span id="d-mode"></span></div>`;
 
     const cards = [
-      ['employees', 'Employees', '👥', '#2C3E50', 'employees'],
-      ['suppliers', 'Suppliers', '🚚', '#9B59B6', 'suppliers'],
-      ['categories', 'Categories', '📂', '#27AE60', 'categories'],
-      ['products', 'Products', '👕', '#3498DB', 'products'],
-      ['sales', 'Sales', '💰', '#E74C3C', 'sales'],
-      ['barcodes', 'Barcodes', '🏷️', '#16A085', 'barcode'],
-      ['raw_materials', 'Raw Materials', '🧵', '#F39C12', 'materials'],
-      ['low_stock', 'Low Stock Items', '⚠️', '#C0392B', 'materials'],
+      ['employees', 'Employees', '👥', '#3B82F6', 'employees'],
+      ['suppliers', 'Suppliers', '🚚', '#8B5CF6', 'suppliers'],
+      ['categories', 'Categories', '📂', '#10B981', 'categories'],
+      ['products', 'Products', '👕', '#06B6D4', 'products'],
+      ['sales', 'Sales', '💰', '#F59E0B', 'sales'],
+      ['barcodes', 'Barcodes', '🏷️', '#14B8A6', 'barcode'],
+      ['raw_materials', 'Raw Materials', '🧵', '#F97316', 'materials'],
+      ['low_stock', 'Low Stock Items', '⚠️', '#EF4444', 'materials'],
       ['job_files', 'Job Files', '📁', '#6366F1', 'jobfile'],
     ];
 
@@ -2250,7 +2338,7 @@ registerPage('dashboard', {
         data: {
           labels: list.map(e => e.name),
           datasets: [{ label: 'Pieces', data: list.map(e => e.pieces),
-            backgroundColor: list.map((_, i) => (i === 0 ? Theme.ink : Theme.alt)), borderRadius: 6, maxBarThickness: 30 }],
+            backgroundColor: list.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 6, maxBarThickness: 30 }],
         },
         options: {
           indexAxis: 'y',
@@ -2266,7 +2354,7 @@ registerPage('dashboard', {
       $('#d-stats').innerHTML = cards.map(([k, label, ico, color, page]) => `
         <div class="stat clickable" style="--accent:${color}" data-go="${page}">
           <div class="ico">${ico}</div><div class="label">${label}</div><div class="value">${fmtInt(d.counts[k])}</div></div>`).join('') +
-        `<div class="stat clickable" style="--accent:#1ABC9C" data-go="sales"><div class="ico">📅</div>
+        `<div class="stat clickable" style="--accent:#14B8A6" data-go="sales"><div class="ico">📅</div>
           <div class="label">Sales this month</div><div class="value" style="font-size:22px">Rs ${fmt(d.month_sales, 0)}</div></div>`;
       $$('#d-stats [data-go]').forEach(c => c.onclick = () => { location.hash = `#/${c.dataset.go}`; });
 
@@ -2280,7 +2368,7 @@ registerPage('dashboard', {
           data: {
             labels: d.production.map(p => p.product),
             datasets: [
-              { label: 'Produced', data: d.production.map(p => p.produced), backgroundColor: Theme.ink, borderRadius: 8 },
+              { label: 'Produced', data: d.production.map(p => p.produced), backgroundColor: Theme.good, borderRadius: 8 },
               { label: 'Damaged', data: d.production.map(p => p.damaged), backgroundColor: Theme.bad, borderRadius: 8 },
             ],
           },
@@ -2555,8 +2643,8 @@ registerPage('suppliers', {
         title: 'Supplier Performance Analytics', wide: true,
         html: `<div class="stats">
             <div class="stat"><div class="label">Total orders</div><div class="value">${total}</div></div>
-            <div class="stat" style="--accent:#27AE60"><div class="label">Delivered</div><div class="value">${delivered}</div></div>
-            <div class="stat" style="--accent:#F39C12"><div class="label">Avg delivery</div><div class="value">${delivered ? (days / delivered).toFixed(1) : '–'} <small>days</small></div></div>
+            <div class="stat" style="--accent:#10B981"><div class="label">Delivered</div><div class="value">${delivered}</div></div>
+            <div class="stat" style="--accent:#F59E0B"><div class="label">Avg delivery</div><div class="value">${delivered ? (days / delivered).toFixed(1) : '–'} <small>days</small></div></div>
           </div>
           <div class="chart-box"><canvas id="s-an-chart"></canvas></div>
           <div class="table-wrap" style="margin-top:14px"><table class="data"><thead><tr><th>Supplier</th><th>Total Orders</th><th>Delivered</th><th>Delivery Rate</th><th>Avg Delivery Days</th></tr></thead><tbody>${rows}</tbody></table></div>`,
@@ -2565,8 +2653,8 @@ registerPage('suppliers', {
           chart($('#s-an-chart', back), {
             type: 'bar',
             data: { labels: names, datasets: [
-              { label: 'Total orders', data: names.map(n => perf[n].total), backgroundColor: Theme.alt },
-              { label: 'Delivered', data: names.map(n => perf[n].delivered), backgroundColor: Theme.ink },
+              { label: 'Total orders', data: names.map(n => perf[n].total), backgroundColor: Theme.ink },
+              { label: 'Delivered', data: names.map(n => perf[n].delivered), backgroundColor: Theme.good },
             ] },
             options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
           });
@@ -2986,10 +3074,10 @@ registerPage('sales', {
       const mo = monthly();
       $('#sa-stats').innerHTML = `
         <div class="stat"><div class="label">Total Sales</div><div class="value" style="font-size:22px">Rs ${fmt(total, 0)}</div></div>
-        <div class="stat" style="--accent:#27AE60"><div class="label">Transactions</div><div class="value">${sales.length}</div></div>
-        <div class="stat" style="--accent:#F39C12"><div class="label">Avg Transaction</div><div class="value" style="font-size:22px">Rs ${fmt(sales.length ? total / sales.length : 0, 0)}</div></div>
-        <div class="stat" style="--accent:#9B59B6"><div class="label">Avg Monthly</div><div class="value" style="font-size:22px">Rs ${fmt(mo.totals.length ? total / mo.totals.length : 0, 0)}</div></div>
-        <div class="stat" style="--accent:#16A085"><div class="label">Months Tracked</div><div class="value">${mo.totals.length}</div></div>`;
+        <div class="stat" style="--accent:#10B981"><div class="label">Transactions</div><div class="value">${sales.length}</div></div>
+        <div class="stat" style="--accent:#F59E0B"><div class="label">Avg Transaction</div><div class="value" style="font-size:22px">Rs ${fmt(sales.length ? total / sales.length : 0, 0)}</div></div>
+        <div class="stat" style="--accent:#8B5CF6"><div class="label">Avg Monthly</div><div class="value" style="font-size:22px">Rs ${fmt(mo.totals.length ? total / mo.totals.length : 0, 0)}</div></div>
+        <div class="stat" style="--accent:#14B8A6"><div class="label">Months Tracked</div><div class="value">${mo.totals.length}</div></div>`;
 
       const daily = {};
       sales.forEach(s => { if (s.order_date) daily[s.order_date] = (daily[s.order_date] || 0) + num(s.total_amount); });
@@ -3004,9 +3092,9 @@ registerPage('sales', {
       const tc = $('#sa-c-trend'), mc = $('#sa-c-month');
       if (!last12.labels.length) { emptyChart(tc, 'No monthly data'); emptyChart(mc, 'No monthly data'); } else {
         showCanvas(tc); showCanvas(mc);
-        chart(tc, { type: 'line', data: { labels: last12.labels, datasets: [{ label: 'Monthly sales (Rs)', data: last12.totals, borderColor: Theme.ink, backgroundColor: Theme.soft, fill: true, tension: .3, pointRadius: 4 }] },
+        chart(tc, { type: 'line', data: { labels: last12.labels, datasets: [{ label: 'Monthly sales (Rs)', data: last12.totals, borderColor: Theme.c.indigo, backgroundColor: Theme.fade(Theme.c.indigo, .14), fill: true, tension: .3, pointRadius: 4 }] },
           options: { scales: { y: { beginAtZero: true } } } });
-        chart(mc, { type: 'bar', data: { labels: last12.labels, datasets: [{ label: 'Rs', data: last12.totals, backgroundColor: Theme.ink, borderRadius: 4 }] },
+        chart(mc, { type: 'bar', data: { labels: last12.labels, datasets: [{ label: 'Rs', data: last12.totals, backgroundColor: last12.totals.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 6 }] },
           options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
       }
       const byProd = {};
@@ -3643,10 +3731,10 @@ registerPage('productivity', {
       const byEmp = Object.entries(sumBy(recs, 'employee_name')).sort((a, b) => b[1] - a[1]);
       const top = byEmp[0];
       $('#pd-cards').innerHTML = `
-        <div class="stat" style="--accent:#3498DB"><div class="label">Total Pieces</div><div class="value">${fmtInt(pieces)}</div></div>
-        <div class="stat" style="--accent:#16A085"><div class="label">Total Line Out</div><div class="value">${fmtInt(lineOut)}</div></div>
-        <div class="stat" style="--accent:#F39C12"><div class="label">Top Performer</div><div class="value" style="font-size:16px">${top ? `${esc(top[0])}<br>${fmtInt(top[1])} pcs` : 'N/A'}</div></div>
-        <div class="stat" style="--accent:#9B59B6"><div class="label">Tasks Completed</div><div class="value">${fmtInt(recs.length)}</div></div>`;
+        <div class="stat" style="--accent:#3B82F6"><div class="label">Total Pieces</div><div class="value">${fmtInt(pieces)}</div></div>
+        <div class="stat" style="--accent:#14B8A6"><div class="label">Total Line Out</div><div class="value">${fmtInt(lineOut)}</div></div>
+        <div class="stat" style="--accent:#F59E0B"><div class="label">Top Performer</div><div class="value" style="font-size:16px">${top ? `${esc(top[0])}<br>${fmtInt(top[1])} pcs` : 'N/A'}</div></div>
+        <div class="stat" style="--accent:#8B5CF6"><div class="label">Tasks Completed</div><div class="value">${fmtInt(recs.length)}</div></div>`;
 
       const trend = sumBy(recs, 'date'), tk = Object.keys(trend).sort();
       const c1 = $('#pd-trend');
@@ -3658,7 +3746,7 @@ registerPage('productivity', {
       const c2 = $('#pd-emp'), top10 = byEmp.slice(0, 10);
       if (!top10.length) emptyChart(c2, 'No data for this period'); else {
         showCanvas(c2);
-        chart(c2, { type: 'bar', data: { labels: top10.map(e => e[0]), datasets: [{ label: 'Pieces', data: top10.map(e => e[1]), backgroundColor: Theme.ink, borderRadius: 4 }] },
+        chart(c2, { type: 'bar', data: { labels: top10.map(e => e[0]), datasets: [{ label: 'Pieces', data: top10.map(e => e[1]), backgroundColor: top10.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 6 }] },
           options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
       }
       const tasks = Object.entries(sumBy(recs, 'task_type')).sort((a, b) => b[1] - a[1]);
@@ -3676,7 +3764,7 @@ registerPage('productivity', {
       const c4 = $('#pd-hour');
       if (!hk.length) emptyChart(c4, 'No data for this period'); else {
         showCanvas(c4);
-        chart(c4, { type: 'line', data: { labels: hk, datasets: [{ label: 'Pieces', data: hk.map(h => hours[h]), borderColor: Theme.ink, backgroundColor: Theme.soft, fill: true, tension: .3 }] },
+        chart(c4, { type: 'line', data: { labels: hk, datasets: [{ label: 'Pieces', data: hk.map(h => hours[h]), borderColor: Theme.c.violet, backgroundColor: Theme.fade(Theme.c.violet, .14), fill: true, tension: .3 }] },
           options: { scales: { y: { beginAtZero: true } } } });
       }
 
@@ -3992,9 +4080,9 @@ registerPage('productivity', {
           data: {
             labels: lk,
             datasets: [
-              { type: 'bar', label: 'Line Input', data: lk.map(k => ld[k].in), backgroundColor: Theme.alt, borderRadius: 6, order: 2 },
-              { type: 'bar', label: 'Line Output', data: lk.map(k => ld[k].out), backgroundColor: Theme.ink, borderRadius: 6, order: 2 },
-              { type: 'line', label: 'Line Balance (running)', data: cum, borderColor: Theme.bad, backgroundColor: Theme.bad, tension: .3, order: 1 },
+              { type: 'bar', label: 'Line Input', data: lk.map(k => ld[k].in), backgroundColor: Theme.ink, borderRadius: 6, order: 2 },
+              { type: 'bar', label: 'Line Output', data: lk.map(k => ld[k].out), backgroundColor: Theme.good, borderRadius: 6, order: 2 },
+              { type: 'line', label: 'Line Balance (running)', data: cum, borderColor: Theme.warn, backgroundColor: Theme.warn, borderWidth: 3, tension: .3, order: 1 },
             ],
           },
           options: { scales: { y: { beginAtZero: true } } },
@@ -4019,7 +4107,7 @@ registerPage('productivity', {
       if (!dk.length) emptyChart(c2, 'No output recorded for this job in this period'); else {
         showCanvas(c2);
         chart(c2, { type: dk.length === 1 ? 'bar' : 'line',
-          data: { labels: dk, datasets: [{ label: 'Pieces', data: dk.map(k => j.daily[k]), borderColor: Theme.ink, backgroundColor: dk.length === 1 ? Theme.ink : Theme.soft, fill: true, tension: .3 }] },
+          data: { labels: dk, datasets: [{ label: 'Pieces', data: dk.map(k => j.daily[k]), borderColor: Theme.c.teal, backgroundColor: dk.length === 1 ? Theme.c.teal : Theme.fade(Theme.c.teal, .14), fill: true, tension: .3 }] },
           options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
       }
     }
